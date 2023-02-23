@@ -115,14 +115,52 @@
             ` + (container? `<div id="${id}_container"></div>`: ''));
         }
 
-        const goToModifications = function(){
+        const goToModifications = function(isRefill = false){
             $('#procedure').append('<div id="procedure_5" class="procedure"><button class="btn btn-primary" id="modificacion">MODIFICACION</button></div>')
             $('#procedure_4').hide();
+
+            if(!isRefill){
+                $('#procedure_5').append('<div class="procedure" id="procedure_5_sub"></div>');
+
+                let labels = [
+                    'Matte a Volumen Suave', 
+                    'Volumen Suave a Medio', 
+                    'Volumen Medio a Mega', 
+                    'Mega a Volumen Medio',
+                    'Volumen Medio a Suave',
+                    'Volumen Suave a Matte',
+                    'Volumen Suave a Hibridas',
+                    'Matte a Hibridas',
+                    'Hibridas a Matte'
+                ];
+                labels.forEach(label => {
+                    let el = createCheckbox(toFriendlyID(label), label);
+                    $('#procedure_5_sub').append(el);
+                });
+            } else {
+                $('#procedure').append('<div id="procedure_8" class="procedure"><button class="btn btn-primary" id="tipo_de_glue">TIPO DE GLUE</button></div>')
+                $('#procedure').append('<div id="procedure_9" class="procedure"><button class="btn btn-primary" id="mapping_pic">MAPPING PIC</button></div>')
+                $('#procedure').append('<div id="procedure_10" class="procedure"><button class="btn btn-primary" id="eyes_pic">EYES PIC</button></div>')
+                $('#procedure').append('<div id="procedure_11" class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>')
+            }
         }
 
         const goToMotives = function(){
             $('#procedure').append('<div id="procedure_6" class="procedure"><button class="btn btn-primary" id="motivos">MOTIVOS</button></div>')
             $('#procedure_4').hide();
+
+            $('#motivos').click(function(){
+                if(!document.querySelector('#motive_input')){
+                    $('#procedure_6').append('<input name="motivos" id="motive_input">');
+
+                    $('#motive_input').change(function(){
+                        if($(this).val()){
+                            $('#results').append(`<p>${$(this).val()}</p>`)
+                            $('#procedure_6').hide();
+                        }
+                    });
+                }
+            });
         }
 
         const goToTransitions = function(){
@@ -147,7 +185,11 @@
             labels.forEach(label => {
                 let el = createCheckbox(toFriendlyID(label), label);
                 $('#procedure_7_sub').append(el);
-
+                $(`#${toFriendlyID(label)}`).click(function(){
+                    goToModifications(true);
+                    $('#results').append(`<p>${label}</p>`)
+                    $('#procedure_7').hide();
+                });
             });
 
         }
@@ -230,6 +272,10 @@
             });
 
             $('#procedimiento').click(function(){
+
+                if(document.querySelector('#procedure_4_sub')){
+                    return;
+                }
                 let date = new Date();
 
                 let fullSet = createCheckbox('full_set', 'Full set');
@@ -261,9 +307,13 @@
                             labels.forEach(function(label){
                                 $('#procedure_4_sub').append(createCheckbox(toFriendlyID(label), label));
                                 $('#' + toFriendlyID(label)).click(function(){
+
                                     $('#results').append(`<p>${type} ${label.toUpperCase()}</p>`);
-                                    goToModifications();
+                                    if(item !== '#refill')
+                                        goToModifications();
+
                                 });
+                                
                             })
                             
                             let transicion = createCheckbox('transicion', 'Transicion');
@@ -280,7 +330,19 @@
                 })
 
                 $('#remocion').change(function(){
-                    goToMotives();
+                    let labels = ['Por alergia', 'Nuevas pestañas', 'Inconformidad'];
+
+                    $('#procedimiento').text('TIPO REMOCION');
+                    $('#procedure_4_sub').html('');
+
+                    labels.forEach(function(label){
+                        $('#procedure_4_sub').append(createCheckbox(toFriendlyID(label), label));
+                        
+                        $('#' + toFriendlyID(label)).click(function(){
+                            $('#results').append(`<p>REMOCION ${label.toUpperCase()}</p>`);
+                            $('#procedure_4').hide();
+                        });
+                    })
                 });
             });
 
