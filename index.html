@@ -1,0 +1,354 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PESTAÑAS</title>
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            padding: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            background-color: white;
+            color: rgb(184, 142, 140);
+        }
+        .app-page {
+            background-image: url('./assets/img/bottom-right.svg'), url('./assets/img/top-right.svg'), url('./assets/img/bottom-left.svg'), url('./assets/img/top-left.svg'), url('./assets/img/horizontals.png'), url('./assets/img/verticals.png'), url('./assets/img/horizontals.png'), url('./assets/img/verticals.png');
+            background-position: bottom right, top right, bottom left, top left, top, left, bottom, right;
+            background-size: 140px, 140px, 140px, 140px, 100px 2.8px, 2.8px, 100px 2.8px, 2.6px;
+            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat-x, repeat-y, repeat-x, repeat-y;    
+        }
+        .app-title {
+            font-size: 40px;
+            font-weight: 100;
+        }
+        .btn-primary, .btn-primary:active, .btn-primary:focus, .btn-primary:focus-within {
+            background-color:rgb(184, 142, 140);
+            color: #FFFFFF;
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+        .forms {
+            width: 100%;
+            margin: 0 auto;
+            max-width: 280px;
+        }
+        .forms .btn {
+            text-align: left;
+        }
+        .procedure {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .procedure label {
+            color: #2C2E35;
+        }
+        #results {
+            width: 100%;
+            max-width: 280px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            align-items: start;
+            font-weight: 400;
+            gap: 4px;
+            color:rgb(184, 142, 140);
+        }
+        #results h6 {
+            font-size: 20px;
+        }
+        #results p {
+            color:rgb(184, 142, 140);
+            font-size: 18px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="app-page">
+        <div class="container-fluid">
+            <div class="d-flex flex-column h-100 gap-3 justify-content-center align-items-center">
+                <a id="logo"><img src="./assets/img/logo.png" width="300"></a>
+                <h1 class="app-title">
+                    PESTAÑAS
+                </h1>
+                <div id="results">
+
+                </div>
+                <div class="flex-column gap-2 forms" id="procedure" style="display: none;">
+                    <div id="procedure_1" class="procedure"><button class="btn btn-primary" id="nombre">NOMBRE</button></div>
+                    <div id="procedure_2" class="procedure"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>
+                    <div id="procedure_3" class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>
+                    <div id="procedure_4" class="procedure"><button class="btn btn-primary" id="procedimiento">PROCEDIMIENTO</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
+    <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <script>
+
+        const padStart = function(text, length = 2, replacedString = '0'){
+            let newText = text;
+            while(newText.length < length){
+                newText = replacedString + newText;
+            }
+            return newText
+        }
+        const options = [
+            {
+                id:"NOMBRE",
+                type: 'button',
+                label: 'NOMBRE',
+                children: [
+                    {
+                        name: 'nombre',
+                        type: 'input',
+                        subType: 'text',
+                        id: 'nombre',
+                        onChange: function(){
+                                      }
+                    }
+                ],
+            },
+            {
+                id:"CONSENTIMIENTO",
+                type: 'button',
+                label: 'CONSENTIMIENTO',
+                children: [
+                    {
+                        label: 'Documento Firmado',
+                        name: 'documento_firmado',
+                        id: 'documento_firmado',
+                        type: 'checkbox',
+                    },
+                    {
+                        label: 'Notificacion de',
+                        name: 'notificacion_de',
+                        id: 'notificacion_de',
+                        type: 'checkbox',
+                        children: [
+                            {
+                                name: 'alergia',
+                                type: 'input',
+                                subType: 'text',
+                                id: 'alergia',
+                                onChange: function(){
+
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id:"INICIAL PIC",
+                type: 'button',
+                label: 'INICIAL PIC',
+                children: [
+                    {
+                        label: 'Accion de tomar',
+                        type: 'plain',  
+                    }
+                ]
+            },
+            {
+                id:"PROCEDIMIENTO",
+                type: 'button',
+                label: 'PROCEDIMIENTO',
+                children: [
+                    {
+                        label: 'Full set',
+                        type: 'radio',
+                        id: 'full_set',
+                        name: 'full_set',
+                        children: [
+
+                        ]
+                    }
+                ]
+            }
+        ]
+
+        const searchForId = function(search, curr = options){
+            for(let option of curr){
+                let {id, children} = option;
+                if(id === search){
+                    return option;
+                }
+                let child = searchForId(search, children ?? []);
+                if(child){
+                    return child;
+                }
+            }
+            return null;
+        }
+
+        $(document).ready(function(){
+
+            let currentStates = [];
+            let currentLevel = currentStates.length;
+            let currentArray = options;
+            let currentId = null;
+            let baseId = null;
+            let currentValue = {
+                '0': [],
+                '1': [],
+                '2': [],
+                '3': [],
+            };
+
+            const start = function(){
+                $('#logo').hide();
+                $('#procedure').attr('style', 'display: flex;');
+
+                $('#nombre').click(function(){
+                    if(!document.querySelector('#full_name')){
+                        $('#procedure_1').append('<input id="full_name" name="full_name" type="text" class="form-control">')
+                        $('#full_name').change(function(){
+                            let val = $(this).val();
+
+                            if(val){
+                                let date = new Date();
+                                $('#results').append(`<h6>${val}</h6>`)
+                                $('#results').append(`<p>${padStart(date.getDate())}/${padStart(date.getMonth())}/${date.getFullYear()}</h6>`)
+
+                                $('#procedure_1').remove();
+                            }
+                        });
+                    }
+                });
+
+                $('#consentimiento').click(function(){
+                    if(!document.querySelector('#documento_firmado')){
+                        let documento_firmado = $(`<div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="documento_firmado">
+                            <label class="form-check-label" for="documento_firmado">
+                                Documento Firmado
+                            </label>
+                        </div>`)
+                        let notification_de = $(`<div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="notification_de">
+                            <label class="form-check-label" for="notification_de">
+                                Notificacion de
+                            </label></div>
+                            <div id="alergia_container"></div>
+                        `);
+                        $('#procedure_2').append(documento_firmado, notification_de);
+
+                        $('#notification_de').change(function(){
+                            if($(this).prop('checked')){
+                                if(!document.querySelector('alergia')){
+                                    $('#alergia_container').append(`<input id="alergia" name="alergia" type="text" class="form-control">`);
+                                    $('#alergia').change(function(){
+                                        let val = $(this).val();
+                                        if(val){
+                                            $('#results').append(`<p>${val}</p>`)
+                                            $('#procedure_2').remove();
+                                        }
+                                    });
+                                }
+                            } else {
+                                $('#alergia').remove();
+                            }
+                        });
+                    }
+                });
+
+                $('#procedure_3').click(function(){
+                    if(!document.getElementById('pic_text')){
+                        $('#procedure_3').append('<label id="pic_text">Accion de tomar</label>')
+                    } 
+                });
+
+                $('#procedure_4').click(function(){
+                    if(document.getElementById('pic_text')){
+                        $('#procedure_3').remove();
+                        let date = new Date();
+                        $('#results').append(`<p>${padStart(date.getHours())}:${padStart(date.getMinutes())}</p>`);
+                    } 
+                });
+                // update();
+            }
+
+            // const update = function(){
+            //     for(let i in currentArray){
+            //         if(currentLevel === 0){
+            //             $('#procedure').append(`
+            //                 <div data-id="procedure_${currentLevel}" data-array-id="${currentArray[i].id}" class="procedure">
+            //                     <button class="btn btn-primary" id="${currentArray[i].id}">${currentArray[i].label}</button>
+            //                 </div>
+            //             `);
+            //             $(`#${currentArray[i].id}`).click(function(){
+            //                 currentStates = [i];
+            //                 currentLevel = 1;
+            //                 baseId = options[i].id;
+            //                 currentId = options[i].id;
+            //                 currentArray = options[i].children ?? [];
+            //                 update();
+            //             });
+            //         }
+
+            //         let procedure = $(`[data-id="procedure_${currentLevel - 1}"][data-array-id="${currentId}"]`);
+            //         let type = currentArray[i].type;
+            //         if(type === 'input'){
+            //             let component = (`<input class="form-control" type="${currentArray[i].subType ?? 'text'}" name="${currentArray[i].name}" id="${currentArray[i].name}"/>`);
+            //             procedure.append(component);
+            //             $(`#${currentArray[i].id}`).on('change', currentArray[i].onChange ?? function(){});
+            //             $(`#${currentArray[i].id}`).on('change', function(){
+            //                 if(baseId && currentArray[i].children === undefined){
+            //                     $(`[data-id="procedure_${currentLevel - 1}"][data-array-id="${baseId}"]`).remove();
+            //                     baseId = null;
+            //                     currentArray = options[currentStates[0] + 1];
+            //                     currentStates = [currentStates[0] + 1];
+            //                     update();
+            //                 }
+            //             });
+            //         } else if(type === 'checkbox'){
+            //             let component = $(`<div data-id="procedure_${currentLevel}" data-array-id="${currentArray[i].id}" class="procedure">
+            //                 <div data-procedure-id="${currentArray[i].id}" class="form-check">
+            //                 <input data-id="${currentArray[i].id}" class="form-check-input" data-level="${currentLevel}" type="checkbox" value="" id="${currentArray[i].id}">
+            //                 <label class="form-check-label" for="${currentArray[i].id}">
+            //                     ${currentArray[i].label}
+            //                 </label>
+            //                 </div></div>`)
+            //             procedure.append(component);
+            //             component.on('change', currentArray[i].onChange ?? function(){});
+            //             component.on('change',  function(){
+            //                 if($(this).prop('checked')){
+            //                     console.log('changed')
+            //                     let id = $(this).attr('id');
+            //                     let level = $(this).data('level');
+            //                     let element = searchForId(id);
+            //                     currentLevel = level;
+            //                     currentArray = element.children?.length ? element.children: options[baseId];
+            //                     if(!element?.children?.length){
+            //                         currentArray = options[currentStates[0] + 1];
+            //                         currentStates = [currentStates[0] + 1];
+            //                         currentLevel += 1;
+            //                     }
+            //                     update()
+            //                 }
+            //             })
+            //         } else if(type === 'plain'){
+            //             let component = $(`<p>Check</p>`)
+            //         }
+                    
+                    
+            //     }
+            // }
+
+            $('#logo').click(function(){
+                start();
+            });
+        });
+    </script>
+</body>
+</html>
