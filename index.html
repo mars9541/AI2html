@@ -26,6 +26,9 @@
             font-size: 40px;
             font-weight: 100;
         }
+        .main_open {
+            padding-top: 72px;
+        }
         .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-primary:focus-within {
             background-color:rgb(184, 142, 140);
             color: #FFFFFF;
@@ -69,12 +72,34 @@
             font-size: 18px;
             margin: 0;
         }
+        .form-check .form-check-input[type="checkbox"]:checked {
+            background-color: #DFC6C5;
+            border-color: #DFC6C5;
+        }
+        .label_file {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+        }
+        .label_file::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            align-items: center;
+            display: block;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232C2E35' class='bi bi-camera' viewBox='0 0 16 16'%3E%3Cpath d='M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z'/%3E%3Cpath d='M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z'/%3E%3C/svg%3E");
+        }
+        
         
     </style>
 </head>
 <body>
     <div class="container base_page">
-        <div class="d-flex flex-column h-100 gap-3 justify-content-center align-items-center">
+        <div id="main_container" class="d-flex flex-column h-100 gap-3 justify-content-center align-items-center">
             <a id="logo"><img src="./assets/img/logo.png" width="300"></a>
             <h1 class="base_title">
                 PESTAÑAS
@@ -88,6 +113,7 @@
                 <div id="procedure_3" class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>
                 <div id="procedure_4" class="procedure"><button class="btn btn-primary" id="procedimiento">PROCEDIMIENTO</button></div>
             </div>
+            <div class="mt-5 d-block w-100"></div>
         </div>
     </div>
 <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
@@ -103,24 +129,28 @@
         return newText
     }
     const data = {
-        name: '',
-        file: '',
-        uploaded_at: null,
-        notification_de: false,
-        documento_firmado: false,
-        alergia: false,
+        datos_generales: {
+            nombre: '',
+            inicial_pic: null,
+            alergia: false,
+            notification_de_alergia: false,
+            documento_firmado: false,
+        },
         procedimiento: {
-            type: '',
-            subType: '',
             label: '',
+            tipo_pestanas: '',
+            tipo_transicion: '',
         },
         modificacion: {
-            type: '',
-            subType: '',
             label: '',
+            tipo_pestanas: '',
+            tipo_transicion: '',
+        },
+        post_service: {
+            servicio_adiciona: [],
         },
         details: {},
-        post_service: {},
+        anotaciones_generales: '',
         is_modified: false,
     };
     let isBButtonCreated = false;
@@ -134,31 +164,31 @@
 
         const update = function(){
             $('#results').html('');
-            if(data.name){
-                $('#results').append(`<h6>${data.name}</h6>`)
-                $('#results').append(`<p>${data.date}</p>`)
+            if(data.datos_generales.nombre){
+                $('#results').append(`<h6>${data.datos_generales.nombre}</h6>`)
+                $('#results').append(`<p>${data.datos_generales.date}</p>`)
             }
-            if(data.file){
-                $('#results').append(`<p>${data.uploaded_at}</p>`)
+            if(data.datos_generales.inicial_pic){
+                $('#results').append(`<p>${data.datos_generales.uploaded_at}</p>`)
             }
-            if(data.alergia){
-                $('#results').append(`<p>${data.alergia}</p>`)
+            if(data.datos_generales.alergia){
+                $('#results').append(`<p>${data.datos_generales.alergia}</p>`)
             } 
-            if(data.modificacion.type){
-                $('#results').append(`<p>${data.modificacion.type} ${data.modificacion.label.toUpperCase()} (Mod)</p>`);
+            if(data.modificacion.tipo_pestanas){
+                $('#results').append(`<p>${data.modificacion.tipo_pestanas} ${data.modificacion.label.toUpperCase()} (MOD)</p>`);
 
-                if(data.modificacion.subType){
-                    $('#results').append(`<p>${data.modificacion.subType}</p>`);
+                if(data.modificacion.tipo_transicion){
+                    $('#results').append(`<p>${data.modificacion.tipo_transicion}</p>`);
                 }
-            } else if(data.procedimiento.type){
-                $('#results').append(`<p>${data.procedimiento.type} ${data.procedimiento.label.toUpperCase()}</p>`);
+            } else if(data.procedimiento.tipo_pestanas){
+                $('#results').append(`<p>${data.procedimiento.tipo_pestanas} ${data.procedimiento.label.toUpperCase()}</p>`);
                 
-                if(data.procedimiento.subType){
-                    $('#results').append(`<p>${data.procedimiento.subType}</p>`);
+                if(data.procedimiento.tipo_transicion){
+                    $('#results').append(`<p>${data.procedimiento.tipo_transicion}</p>`);
                 }
             }
 
-            if(data.post_service.productos_mtto && data.post_service.productos_plus && data.post_service.servicio_adiciona && data.post_service.servicio_futuro){
+            if(data.post_service.productos_mtto && data.post_service.productos_adicionales && data.post_service.servicio_adiciona && data.post_service.servicio_futuro){
                 $('#procedure_c').hide();
                 showButtonsD();
             }
@@ -175,7 +205,7 @@
         }
 
         const createFileInput = function(id){
-            return $(`<label id="${id}_label" class="position-relative">Accion de tomar<input id="${id}" type="file" style="visibility: hidden; position: absolute"></label>`);
+            return $(`<label id="${id}_label" class="label_file">Accion de tomar<input id="${id}" type="file" style="visibility: hidden; position: absolute"></label>`);
         }
 
         const createInput = function(id){
@@ -201,6 +231,9 @@
                 
 
                 $('#tipo_de_glue').click(function(){
+                    if(document.querySelector('#procedure_b_1_sub')){
+                        return;
+                    }
                     let labels = [
                         'Regular',
                         'Antiallergic'
@@ -253,7 +286,7 @@
                 $('#procedure').append('<div id="procedure_c" class="procedure"></div>')
                 $('#procedure_c').append('<div id="procedure_c_1" class="procedure"><button class="btn btn-primary" id="productos_mtto">PRODUCTOS MTTO</button></div>');
                 $('#procedure_c').append('<div id="procedure_c_2" class="procedure"><button class="btn btn-primary" id="servicio_adiciona">SERVICIO ADICIONA</button></div>');
-                $('#procedure_c').append('<div id="procedure_c_3" class="procedure"><button class="btn btn-primary" id="productos_plus">PRODUCTOS+</button></div>');
+                $('#procedure_c').append('<div id="procedure_c_3" class="procedure"><button class="btn btn-primary" id="productos_adicionales">PRODUCTOS ADICIONALES</button></div>');
                 $('#procedure_c').append('<div id="procedure_c_4" class="procedure"><button class="btn btn-primary" id="servicio_futuro">SERVICIO FUTURO</button></div>');
                 
 
@@ -295,24 +328,48 @@
                     labels.forEach(label => {
                         let el = createCheckbox(toFriendlyID(label), label);
                         $('#procedure_c_2_sub').append(el);
-                        $(`#${toFriendlyID(label)}`).click(function(){
+                        $(`#${toFriendlyID(label)}`).change(function(){
                         
-                            $('#procedure_c_2').remove();
-                            data.post_service.servicio_adiciona = label;
+                            if($(this).prop('checked')){
+                                data.post_service.servicio_adiciona.push(label);
+                            } else {
+                                data.post_service.servicio_adiciona.splice(data.post_service.servicio_adiciona.indexOf(label), 1);
+                            }
+                            // $('#procedure_c_2').remove();
                             update();
 
                         });
                     });
+                    
+                    $('#procedure_c_2_sub').append('<p class="mb-0" id="especialista">Especialista</div>');
+                    let especialistas = [
+                        'Irianys',
+                        'Laura',
+                        'Cabina',
+                    ]
+
+                    especialistas.forEach(label => {
+                        let el = createCheckbox(toFriendlyID(label), label);
+                        $('#procedure_c_2_sub').append(el);
+                        $(`#${toFriendlyID(label)}`).click(function(){
+                        
+                            data.post_service.especialista = label;  
+                            $('#procedure_c_2').remove();
+                            update();
+
+                        });
+                    });
+
                 });
 
-                $('#productos_plus').click(function(){
-                    if(document.getElementById('productos_plus_input')){
+                $('#productos_adicionales').click(function(){
+                    if(document.getElementById('productos_adicionales_input')){
                        return; 
                     }
-                    $('#procedure_c_3').append(createInput('productos_plus_input'));
-                    $('#productos_plus_input').change(function(){
+                    $('#procedure_c_3').append(createInput('productos_adicionales_input'));
+                    $('#productos_adicionales_input').change(function(){
                         if($(this).val()){
-                            data.post_service.productos_plus = $(this).val();
+                            data.post_service.productos_adicionales = $(this).val();
                             $('#procedure_c_3').hide();
                             update();
                         }
@@ -368,6 +425,7 @@
                     });
                 });
                 $('#enviar').click(function(){
+                    data.sent_at = new Date();
                     onSend();
                 });
 
@@ -424,10 +482,10 @@
                     $('#procedure_4_sub').remove();
                     $('#procedure_7').remove();
                     
-                    if(!data.procedimiento.subType) 
-                        data.procedimiento.subType = label;
+                    if(!data.procedimiento.tipo_transicion) 
+                        data.procedimiento.tipo_transicion = label;
                     else
-                        data.modificacion.subType = label;
+                        data.modificacion.tipo_transicion = label;
                     update();
 
                     goToModifications();
@@ -443,6 +501,8 @@
 
         const start = function(){
             $('#logo').hide();
+            $('#main_container').addClass('main_open');
+            $('#main_container').removeClass('justify-content-center');
             $('#procedure').attr('style', 'display: flex;');
 
             $('#nombre').click(function(){
@@ -454,8 +514,8 @@
                         if(val){
 
                             let date = new Date();
-                            data.date = `${padStart(date.getDate())}/${padStart(date.getMonth())}/${date.getFullYear()}`;
-                            data.name = val;
+                            data.datos_generales.date = `${padStart(date.getDate())}/${padStart(date.getMonth())}/${date.getFullYear()}`;
+                            data.datos_generales.nombre = val;
                             update();
                           
                             $('#procedure_1').remove();
@@ -475,7 +535,7 @@
                     let notification_de = $(`<div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="notification_de">
                         <label class="form-check-label" for="notification_de">
-                            Notificacion de Alergia
+                            Notificacion de alergia
                         </label></div>
                         <div id="alergia_container"></div>
                     `);
@@ -488,9 +548,9 @@
                                 $('#alergia').change(function(){
                                     let val = $(this).val();
                                     if(val){
-                                        data.documento_firmado = $('#documento_firmado').prop('checked');
-                                        data.notification_de = $('#notification_de').prop('checked');
-                                        data.alergia = val;
+                                        data.datos_generales.documento_firmado = $('#documento_firmado').prop('checked');
+                                        data.datos_generales.notification_de_alergia = $('#notification_de').prop('checked');
+                                        data.datos_generales.alergia = val;
                                         update();
 
                                         $('#procedure_2').remove();
@@ -505,10 +565,10 @@
             });
 
             $('#inicial_pic').click(function(){
-                if(!document.getElementById('pic_text')){
+                if(!document.getElementById('initial_pic_label')){
                     
-                    $('#procedure_3').append('<label id="pic_text" class="position-relative">Accion de tomar<input id="initial_pic_file" type="file" style="visibility: hidden; position: absolute"></label>')
-                    $('#initial_pic_file').change(function(e){
+                    $('#procedure_3').append(createFileInput('initial_pic'))
+                    $('#initial_pic').change(function(e){
                         let file = e.target.files[0];
                         if(file){
                             let date = new Date();
@@ -519,8 +579,8 @@
                                 am = "PM"
                             }
 
-                            data.file = file;
-                            data.uploaded_at = `${padStart(hours)}:${padStart(date.getMinutes())} ${am}`;
+                            data.datos_generales.inicial_pic = file;
+                            data.datos_generales.uploaded_at = `${padStart(hours)}:${padStart(date.getMinutes())} ${am}`;
                             $('#procedure_3').remove();
                             update();
                         }
@@ -565,15 +625,15 @@
                                 $('#procedure_4_sub').append(createCheckbox(toFriendlyID(label), label));
                                 $('#' + toFriendlyID(label)).click(function(){
 
-                                    if(data.procedimiento.type){
+                                    if(data.procedimiento.tipo_pestanas){
                                         data.is_modified = true;
-                                        data.modificacion.type = type;
+                                        data.modificacion.tipo_pestanas = type;
                                         data.modificacion.label = label;
-                                        data.modificacion.subType = '';
+                                        data.modificacion.tipo_transicion = '';
                                     } else {
-                                        data.procedimiento.type = type;
+                                        data.procedimiento.tipo_pestanas = type;
                                         data.procedimiento.label = label;
-                                        data.procedimiento.subType = '';
+                                        data.procedimiento.tipo_transicion = '';
                                     }
                                     
                                     update();
@@ -592,15 +652,15 @@
                                 $('#transicion').click(function(){
 
                                     let label = 'TRANSICION';
-                                    if(data.procedimiento.type){
+                                    if(data.procedimiento.tipo_pestanas){
                                         data.is_modified = true;
-                                        data.modificacion.type = type;
+                                        data.modificacion.tipo_pestanas = type;
                                         data.modificacion.label = label;
-                                        data.modificacion.subType = '';
+                                        data.modificacion.tipo_transicion = '';
                                     } else {
-                                        data.procedimiento.type = type;
+                                        data.procedimiento.tipo_pestanas = type;
                                         data.procedimiento.label = label;
-                                        data.procedimiento.subType = '';
+                                        data.procedimiento.tipo_transicion = '';
                                     }
                                     
                                     update();
@@ -624,13 +684,13 @@
                         $('#' + toFriendlyID(label)).click(function(){
                         
                             let type = 'REMOCION';
-                            if(data.procedimiento.type){
+                            if(data.procedimiento.tipo_pestanas){
                                 data.is_modified = true;
-                                data.modificacion.type = type;
+                                data.modificacion.tipo_pestanas = type;
                                 data.modificacion.label = label;
-                                data.modificacion.subType = '';
+                                data.modificacion.tipo_transicion = '';
                             } else {
-                                data.procedimiento.type = type;
+                                data.procedimiento.tipo_pestanas = type;
                                 data.procedimiento.label = label;
                             }
                             
