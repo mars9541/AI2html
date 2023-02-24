@@ -121,12 +121,12 @@
             $('#results').append(`<h6>${data.name}</h6>`)
             $('#results').append(`<p>${data.date}</p>`)
         }
-        if(data.alergia){
-            $('#results').append(`<p>${data.alergia}</p>`)
-        }
         if(data.file){
             $('#results').append(`<p>${data.uploaded_at}</p>`)
         }
+        if(data.alergia){
+            $('#results').append(`<p>${data.alergia}</p>`)
+        } 
         if(data.procedimiento.type){
             $('#results').append(`<p>${data.procedimiento.type} ${data.procedimiento.label.toUpperCase()} ${data.is_modified? " (Mod)": ''}</p>`);
         }
@@ -292,9 +292,15 @@
                         let file = e.target.files[0];
                         if(file){
                             let date = new Date();
+                            let hours = date.getHours();
+                            let am = "AM";
+                            if(hours > 12){
+                                hours -= 12;
+                                am = "PM"
+                            }
 
                             data.file = file;
-                            data.uploaded_at = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
+                            data.uploaded_at = `${padStart(hours)}:${padStart(date.getMinutes())} ${am}`;
                             $('#procedure_3').remove();
                             update();
                         }
