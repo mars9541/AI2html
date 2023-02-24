@@ -119,6 +119,8 @@
             subType: '',
             label: '',
         },
+        details: {},
+        post_service: {},
         is_modified: false,
     };
     let isBButtonCreated = false;
@@ -156,7 +158,7 @@
                 }
             }
 
-            if(data.productos_mtto && data.productos_plus && data.servicio_adiciona && data.servicio_futuro){
+            if(data.post_service.productos_mtto && data.post_service.productos_plus && data.post_service.servicio_adiciona && data.post_service.servicio_futuro){
                 $('#procedure_c').hide();
                 showButtonsD();
             }
@@ -212,7 +214,7 @@
                             
                             $('#procedure_b_1').remove();
                             
-                            data.tipo_de_glue = label;
+                            data.details.tipo_de_glue = label;
 
                             update();
 
@@ -226,7 +228,7 @@
                             $('#' + id).parent().append(createFileInput(id + '_file'));
                             $('#' + id + '_file').change(function(e){
                                 if(e.target.files?.[0]){
-                                    data[id] = e.target.files[0]
+                                    data.details[id] = e.target.files[0]
                                 }
                                 $('#' + id).parent().hide();
                                 if(id === 'final_pic'){
@@ -269,7 +271,7 @@
                         $(`#${toFriendlyID(label)}`).click(function(){
                         
                             $('#procedure_c_1').remove();
-                            data.productos_mtto = label;
+                            data.post_service.productos_mtto = label;
                             update();
 
                         });
@@ -296,7 +298,7 @@
                         $(`#${toFriendlyID(label)}`).click(function(){
                         
                             $('#procedure_c_2').remove();
-                            data.servicio_adiciona = label;
+                            data.post_service.servicio_adiciona = label;
                             update();
 
                         });
@@ -310,7 +312,7 @@
                     $('#procedure_c_3').append(createInput('productos_plus_input'));
                     $('#productos_plus_input').change(function(){
                         if($(this).val()){
-                            data.productos_plus = $(this).val();
+                            data.post_service.productos_plus = $(this).val();
                             $('#procedure_c_3').hide();
                             update();
                         }
@@ -324,7 +326,7 @@
                     $('#procedure_c_4').append(createInput('servicio_futuro_input'));
                     $('#servicio_futuro_input').change(function(){
                         if($(this).val()){
-                            data.servicio_futuro = $(this).val();
+                            data.post_service.servicio_futuro = $(this).val();
                             $('#procedure_c_4').hide();
                             update();
                         }
@@ -369,33 +371,6 @@
                     onSend();
                 });
 
-                $('#productos_plus').click(function(){
-                    if(document.getElementById('productos_plus_input')){
-                       return; 
-                    }
-                    $('#procedure_c_3').append(createInput('productos_plus_input'));
-                    $('#productos_plus_input').change(function(){
-                        if($(this).val()){
-                            data.productos_plus = $(this).val();
-                            $('#procedure_c_3').hide();
-                            update();
-                        }
-                    });
-                });
-
-                $('#servicio_futuro').click(function(){
-                    if(document.getElementById('servicio_futuro_input')){
-                       return; 
-                    }
-                    $('#procedure_c_4').append(createInput('servicio_futuro_input'));
-                    $('#servicio_futuro_input').change(function(){
-                        if($(this).val()){
-                            data.servicio_futuro = $(this).val();
-                            $('#procedure_c_4').hide();
-                            update();
-                        }
-                    });
-                });
             }
             
 
