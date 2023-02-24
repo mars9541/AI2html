@@ -111,6 +111,12 @@
         procedimiento: {
             type: '',
             subType: '',
+            label: '',
+        },
+        modificacion: {
+            type: '',
+            subType: '',
+            label: '',
         },
         is_modified: false,
     };
@@ -127,12 +133,20 @@
         if(data.alergia){
             $('#results').append(`<p>${data.alergia}</p>`)
         } 
-        if(data.procedimiento.type){
-            $('#results').append(`<p>${data.procedimiento.type} ${data.procedimiento.label.toUpperCase()} ${data.is_modified? " (Mod)": ''}</p>`);
+        if(data.modificacion.type){
+            $('#results').append(`<p>${data.modificacion.type} ${data.modificacion.label.toUpperCase()} (Mod)</p>`);
+
+            if(data.modificacion.subType){
+                $('#results').append(`<p>${data.modificacion.subType}</p>`);
+            }
+        } else if(data.procedimiento.type){
+            $('#results').append(`<p>${data.procedimiento.type} ${data.procedimiento.label.toUpperCase()}</p>`);
+            
+            if(data.procedimiento.subType){
+                $('#results').append(`<p>${data.procedimiento.subType}</p>`);
+            }
         }
-        if(data.procedimiento.subType){
-            $('#results').append(`<p>${data.procedimiento.subType}</p>`);
-        }
+        
     }
 
     $(document).ready(function(){
@@ -207,7 +221,10 @@
                     $('#procedure_4_sub').remove();
                     $('#procedure_7').remove();
                     
-                    data.procedimiento.subType = label;
+                    if(!data.procedimiento.subType) 
+                        data.procedimiento.subType = label;
+                    else
+                        data.modificacion.subType = label;
                     update();
 
                     goToModifications();
@@ -255,7 +272,7 @@
                     let notification_de = $(`<div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="notification_de">
                         <label class="form-check-label" for="notification_de">
-                            Notificacion de
+                            Notificacion de Alergia
                         </label></div>
                         <div id="alergia_container"></div>
                     `);
@@ -347,9 +364,15 @@
 
                                     if(data.procedimiento.type){
                                         data.is_modified = true;
+                                        data.modificacion.type = type;
+                                        data.modificacion.label = label;
+                                        data.modificacion.subType = '';
+                                    } else {
+                                        data.procedimiento.type = type;
+                                        data.procedimiento.label = label;
+                                        data.procedimiento.subType = '';
                                     }
-                                    data.procedimiento.type = type;
-                                    data.procedimiento.label = label;
+                                    
                                     update();
                                     
                                     goToModifications();
@@ -365,8 +388,18 @@
                                 $('#procedure_4_sub').append(transicion);
                                 $('#transicion').click(function(){
 
-                                    data.procedimiento.type = type;
-                                    data.procedimiento.label = 'TRANSICION';
+                                    let label = 'TRANSICION';
+                                    if(data.procedimiento.type){
+                                        data.is_modified = true;
+                                        data.modificacion.type = type;
+                                        data.modificacion.label = label;
+                                        data.modificacion.subType = '';
+                                    } else {
+                                        data.procedimiento.type = type;
+                                        data.procedimiento.label = label;
+                                        data.procedimiento.subType = '';
+                                    }
+                                    
                                     update();
 
                                     goToTransitions();
@@ -387,11 +420,17 @@
                         
                         $('#' + toFriendlyID(label)).click(function(){
                         
+                            let type = 'REMOCION';
                             if(data.procedimiento.type){
                                 data.is_modified = true;
+                                data.modificacion.type = type;
+                                data.modificacion.label = label;
+                                data.modificacion.subType = '';
+                            } else {
+                                data.procedimiento.type = type;
+                                data.procedimiento.label = label;
                             }
-                            data.procedimiento.type = 'REMOCION';
-                            data.procedimiento.label = label;
+                            
                             update();
 
                             $('#procedure_4_sub').remove();
