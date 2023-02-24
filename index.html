@@ -94,6 +94,7 @@
 <script src="./bootstrap/js/bootstrap.min.js"></script>
 <script>
 
+    
     const padStart = function(text, length = 2, replacedString = '0'){
         let newText = text + '';
         while(newText.length < length){
@@ -120,36 +121,46 @@
         },
         is_modified: false,
     };
-
-    const update = function(){
-        $('#results').html('');
-        if(data.name){
-            $('#results').append(`<h6>${data.name}</h6>`)
-            $('#results').append(`<p>${data.date}</p>`)
-        }
-        if(data.file){
-            $('#results').append(`<p>${data.uploaded_at}</p>`)
-        }
-        if(data.alergia){
-            $('#results').append(`<p>${data.alergia}</p>`)
-        } 
-        if(data.modificacion.type){
-            $('#results').append(`<p>${data.modificacion.type} ${data.modificacion.label.toUpperCase()} (Mod)</p>`);
-
-            if(data.modificacion.subType){
-                $('#results').append(`<p>${data.modificacion.subType}</p>`);
-            }
-        } else if(data.procedimiento.type){
-            $('#results').append(`<p>${data.procedimiento.type} ${data.procedimiento.label.toUpperCase()}</p>`);
-            
-            if(data.procedimiento.subType){
-                $('#results').append(`<p>${data.procedimiento.subType}</p>`);
-            }
-        }
-        
+    let isBButtonCreated = false;
+    let isCButtonCreated = false;
+    let isDButtonCreated = false;
+    const onSend = function(){
+        alert('SENDING');   
     }
 
     $(document).ready(function(){
+
+        const update = function(){
+            $('#results').html('');
+            if(data.name){
+                $('#results').append(`<h6>${data.name}</h6>`)
+                $('#results').append(`<p>${data.date}</p>`)
+            }
+            if(data.file){
+                $('#results').append(`<p>${data.uploaded_at}</p>`)
+            }
+            if(data.alergia){
+                $('#results').append(`<p>${data.alergia}</p>`)
+            } 
+            if(data.modificacion.type){
+                $('#results').append(`<p>${data.modificacion.type} ${data.modificacion.label.toUpperCase()} (Mod)</p>`);
+
+                if(data.modificacion.subType){
+                    $('#results').append(`<p>${data.modificacion.subType}</p>`);
+                }
+            } else if(data.procedimiento.type){
+                $('#results').append(`<p>${data.procedimiento.type} ${data.procedimiento.label.toUpperCase()}</p>`);
+                
+                if(data.procedimiento.subType){
+                    $('#results').append(`<p>${data.procedimiento.subType}</p>`);
+                }
+            }
+
+            if(data.productos_mtto && data.productos_plus && data.servicio_adiciona && data.servicio_futuro){
+                $('#procedure_c').hide();
+                showButtonsD();
+            }
+        }
 
         const createCheckbox = function(id, label, container = false){
             return $(`<div class="form-check">
@@ -161,19 +172,236 @@
             ` + (container? `<div id="${id}_container"></div>`: ''));
         }
 
+        const createFileInput = function(id){
+            return $(`<label id="${id}_label" class="position-relative">Accion de tomar<input id="${id}" type="file" style="visibility: hidden; position: absolute"></label>`);
+        }
+
+        const createInput = function(id){
+            return $(`<input class="form-control" name="${id}" id="${id}">`)
+        }
+
         const goToModifications = function(isRefill = false){
             $('#procedure_4').show();
             $('#procedimiento').text('MODIFICACION');
-
-            if(!isRefill){
-               
-            } else {
-            //     $('#procedure').append('<div id="procedure_8" class="procedure"><button class="btn btn-primary" id="tipo_de_glue">TIPO DE GLUE</button></div>')
-            //     $('#procedure').append('<div id="procedure_9" class="procedure"><button class="btn btn-primary" id="mapping_pic">MAPPING PIC</button></div>')
-            //     $('#procedure').append('<div id="procedure_10" class="procedure"><button class="btn btn-primary" id="eyes_pic">EYES PIC</button></div>')
-            //     $('#procedure').append('<div id="procedure_11" class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>')
-            }
+            showButtonsB();
         }
+        
+        const showButtonsB = function(){
+            
+            if(!isBButtonCreated){
+                isBButtonCreated = true;
+
+                $('#procedure').append('<div id="procedure_b" class="procedure"></div>')
+                $('#procedure_b').append('<div id="procedure_b_1" class="procedure"><button class="btn btn-primary" id="tipo_de_glue">TIPO DE GLUE</button></div>');
+                $('#procedure_b').append('<div id="procedure_b_2" class="procedure"><button class="btn btn-primary" id="maping_pic">MAPING PIC</button></div>');
+                $('#procedure_b').append('<div id="procedure_b_3" class="procedure"><button class="btn btn-primary" id="eyes_pic">EYES PIC</button></div>');
+                $('#procedure_b').append('<div id="procedure_b_4" class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>');
+                
+
+                $('#tipo_de_glue').click(function(){
+                    let labels = [
+                        'Regular',
+                        'Antiallergic'
+                    ];
+                    $('#procedure_b_1').append('<div id="procedure_b_1_sub" class="procedure"></div>');
+
+                    labels.forEach(label => {
+                        let el = createCheckbox(toFriendlyID(label), label);
+                        $('#procedure_b_1_sub').append(el);
+                        $(`#${toFriendlyID(label)}`).click(function(){
+                            
+                            $('#procedure_b_1').remove();
+                            
+                            data.tipo_de_glue = label;
+
+                            update();
+
+                        });
+                    });
+                });
+                $(['maping_pic', 'eyes_pic', 'final_pic']).each(function(i, id){
+                    
+                    $('#' + id).click(function(){
+                        if(!document.getElementById(id + '_file')){
+                            $('#' + id).parent().append(createFileInput(id + '_file'));
+                            $('#' + id + '_file').change(function(e){
+                                if(e.target.files?.[0]){
+                                    data[id] = e.target.files[0]
+                                }
+                                $('#' + id).parent().hide();
+                                if(id === 'final_pic'){
+                                    $('#procedure_b').hide();
+                                    $('#procedure_4').hide();
+                                    showButtonsC();
+                                }
+                            });
+                        }
+
+                    });
+                });
+            }
+            
+
+        }
+        const showButtonsC = function(){
+            
+            if(!isCButtonCreated){
+                isCButtonCreated = true;
+
+                $('#procedure').append('<div id="procedure_c" class="procedure"></div>')
+                $('#procedure_c').append('<div id="procedure_c_1" class="procedure"><button class="btn btn-primary" id="productos_mtto">PRODUCTOS MTTO</button></div>');
+                $('#procedure_c').append('<div id="procedure_c_2" class="procedure"><button class="btn btn-primary" id="servicio_adiciona">SERVICIO ADICIONA</button></div>');
+                $('#procedure_c').append('<div id="procedure_c_3" class="procedure"><button class="btn btn-primary" id="productos_plus">PRODUCTOS+</button></div>');
+                $('#procedure_c').append('<div id="procedure_c_4" class="procedure"><button class="btn btn-primary" id="servicio_futuro">SERVICIO FUTURO</button></div>');
+                
+
+                $('#productos_mtto').click(function(){
+                    let labels = [
+                        'Kit Básico 05/25/2022',
+                        'Kit Plus',
+                        'Productos individuales'
+                    ];
+                    $('#procedure_c_1').append('<div id="procedure_c_1_sub" class="procedure"></div>');
+
+                    labels.forEach(label => {
+                        let el = createCheckbox(toFriendlyID(label), label);
+                        $('#procedure_c_1_sub').append(el);
+                        $(`#${toFriendlyID(label)}`).click(function(){
+                        
+                            $('#procedure_c_1').remove();
+                            data.productos_mtto = label;
+                            update();
+
+                        });
+                    });
+                });
+                $('#servicio_adiciona').click(function(){
+                    let labels = [
+                        'Remoción',
+                        'Henna',
+                        'Cejas con pinza',
+                        'Wax cejas',
+                        'Wax labio superior',
+                        'Wax barbilla',
+                        'Lifting de cejas',
+                        'Lifting de pestañas',
+                        'Blanqueamiento dental',
+                        'Henna',
+                    ];
+                    $('#procedure_c_2').append('<div id="procedure_c_2_sub" class="procedure"></div>');
+
+                    labels.forEach(label => {
+                        let el = createCheckbox(toFriendlyID(label), label);
+                        $('#procedure_c_2_sub').append(el);
+                        $(`#${toFriendlyID(label)}`).click(function(){
+                        
+                            $('#procedure_c_2').remove();
+                            data.servicio_adiciona = label;
+                            update();
+
+                        });
+                    });
+                });
+
+                $('#productos_plus').click(function(){
+                    if(document.getElementById('productos_plus_input')){
+                       return; 
+                    }
+                    $('#procedure_c_3').append(createInput('productos_plus_input'));
+                    $('#productos_plus_input').change(function(){
+                        if($(this).val()){
+                            data.productos_plus = $(this).val();
+                            $('#procedure_c_3').hide();
+                            update();
+                        }
+                    });
+                });
+
+                $('#servicio_futuro').click(function(){
+                    if(document.getElementById('servicio_futuro_input')){
+                       return; 
+                    }
+                    $('#procedure_c_4').append(createInput('servicio_futuro_input'));
+                    $('#servicio_futuro_input').change(function(){
+                        if($(this).val()){
+                            data.servicio_futuro = $(this).val();
+                            $('#procedure_c_4').hide();
+                            update();
+                        }
+                    });
+                });
+            }
+            
+
+        }
+        const showButtonsD = function(){
+            
+            if(!isDButtonCreated){
+                isDButtonCreated = true;
+
+                $('#procedure').append('<div id="procedure_d" class="procedure"></div>')
+                $('#procedure_d').append('<div id="procedure_d_1" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
+                $('#procedure_d').append('<div id="procedure_d_2" class="procedure"><button class="btn btn-primary" id="enviar">ENVIAR</button></div>');
+                
+
+                $('#anotaciones_generales').click(function(){
+                    let labels = [
+                        'Muy satisfecha',
+                        'Satisfecha',
+                        'Conforme',
+                        'Inconforme'
+                    ];
+                    $('#procedure_d_1').append('<div id="procedure_d_1_sub" class="procedure"></div>');
+
+                    labels.forEach(label => {
+                        let el = createCheckbox(toFriendlyID(label), label);
+                        $('#procedure_d_1_sub').append(el);
+                        $(`#${toFriendlyID(label)}`).click(function(){
+                        
+                            $('#procedure_d_1').remove();
+                            data.anotaciones_generales = label;
+                            update();
+
+                        });
+                    });
+                });
+                $('#enviar').click(function(){
+                    onSend();
+                });
+
+                $('#productos_plus').click(function(){
+                    if(document.getElementById('productos_plus_input')){
+                       return; 
+                    }
+                    $('#procedure_c_3').append(createInput('productos_plus_input'));
+                    $('#productos_plus_input').change(function(){
+                        if($(this).val()){
+                            data.productos_plus = $(this).val();
+                            $('#procedure_c_3').hide();
+                            update();
+                        }
+                    });
+                });
+
+                $('#servicio_futuro').click(function(){
+                    if(document.getElementById('servicio_futuro_input')){
+                       return; 
+                    }
+                    $('#procedure_c_4').append(createInput('servicio_futuro_input'));
+                    $('#servicio_futuro_input').change(function(){
+                        if($(this).val()){
+                            data.servicio_futuro = $(this).val();
+                            $('#procedure_c_4').hide();
+                            update();
+                        }
+                    });
+                });
+            }
+            
+
+        }
+        
+
 
         const goToMotives = function(){
             $('#procedure').append('<div id="procedure_6" class="procedure"><button class="btn btn-primary" id="motivos">MOTIVOS</button></div>')
@@ -235,7 +463,7 @@
         }
 
         let toFriendlyID = function(label){
-            return label.replace(new RegExp('( )', 'g'), '_').toLowerCase();
+            return label.replace(new RegExp('( )', 'g'), '_').replace(new RegExp('/', 'g'), '_').toLowerCase();
         }
 
         const start = function(){
