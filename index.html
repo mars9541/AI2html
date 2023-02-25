@@ -245,6 +245,10 @@
             $('#procedimiento').text('MODIFICACION');
             showButtonsB();
         }
+
+        const capitalLetter = function (str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
         
         const showButtonsB = function(){
             
@@ -520,8 +524,6 @@
 
         }
         
-
-
         const goToMotives = function(){
             $('#procedure').append('<div id="procedure_6" class="procedure"><button class="btn btn-primary" id="motivos">MOTIVOS</button></div>')
             $('#procedure_4').hide();
@@ -754,14 +756,18 @@
                         let val = $(this).val();
 
                         if(val){
-
+                            const name = val.split(" ");
+                            let nombre = "";
+                            for (i in name) {
+                                nombre += capitalLetter(name[i]) + " ";
+                            }
                             let date = new Date();
                             data.datos_generales.date = `${padStart(date.getMonth())}/${padStart(date.getDate())}/${date.getFullYear()}`;
-                            data.datos_generales.nombre = val;
+                            data.datos_generales.nombre = nombre;
 
                             states.push(function(){
                                 data.datos_generales.nombre = '';
-                                $('#full_name').val(val);
+                                $('#full_name').val(nombre);
                                 $('#procedure_1').show();
                                 update();
                             });
