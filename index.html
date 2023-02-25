@@ -756,7 +756,7 @@
                         if(val){
 
                             let date = new Date();
-                            data.datos_generales.date = `${padStart(date.getDate())}/${padStart(date.getMonth())}/${date.getFullYear()}`;
+                            data.datos_generales.date = `${padStart(date.getMonth())}/${padStart(date.getDate())}/${date.getFullYear()}`;
                             data.datos_generales.nombre = val;
 
                             states.push(function(){
