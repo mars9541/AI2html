@@ -93,6 +93,12 @@
             background-position: center;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232C2E35' class='bi bi-camera' viewBox='0 0 16 16'%3E%3Cpath d='M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z'/%3E%3Cpath d='M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z'/%3E%3C/svg%3E");
         }
+        #back_button {
+            position: absolute;
+            margin-top: auto;
+            margin-right: auto;
+            bottom: 5%;
+        }
         
         
     </style>
@@ -114,6 +120,9 @@
                 <div id="procedure_4" class="procedure"><button class="btn btn-primary" id="procedimiento">PROCEDIMIENTO</button></div>
             </div>
             <div class="mt-5 d-block w-100"></div>
+            <button id="back_button" style="display: none;" class="btn btn-primary">
+                Back
+            </button>
         </div>
     </div>
 <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
@@ -153,6 +162,7 @@
         anotaciones_generales: '',
         is_modified: false,
     };
+    const states = [];
     let isBButtonCreated = false;
     let isCButtonCreated = false;
     let isDButtonCreated = false;
@@ -191,6 +201,15 @@
             if(data.post_service.productos_mtto && data.post_service.productos_adicionales && data.post_service.servicio_adiciona && data.post_service.servicio_futuro){
                 $('#procedure_c').hide();
                 showButtonsD();
+            } else {
+                $('#procedure_d').remove();
+                isDButtonCreated = false;
+            }
+            
+            if(states.length){
+                $('#back_button').show();
+            } else {
+                $('#back_button').hide();
             }
         }
 
@@ -231,9 +250,12 @@
                 
 
                 $('#tipo_de_glue').click(function(){
-                    if(document.querySelector('#procedure_b_1_sub')){
-                        return;
-                    }
+                    initTipoDeGlue();
+                });
+
+                const initTipoDeGlue = function(){
+                    if(document.querySelector('#procedure_b_1_sub')) return;
+            
                     let labels = [
                         'Regular',
                         'Antiallergic'
@@ -245,33 +267,53 @@
                         $('#procedure_b_1_sub').append(el);
                         $(`#${toFriendlyID(label)}`).click(function(){
                             
-                            $('#procedure_b_1').remove();
+                            $('#procedure_b_1').hide();
+                            $('#procedure_b_1_sub').remove();
                             
                             data.details.tipo_de_glue = label;
+                            states.push(function(){
+                                data.details.tipo_de_glue = null;
+                                $('#procedure_b_1').show();
+                                update();
+                                initTipoDeGlue();
+                            });
 
                             update();
 
                         });
                     });
-                });
+                }
                 $(['maping_pic', 'eyes_pic', 'final_pic']).each(function(i, id){
                     
                     $('#' + id).click(function(){
                         if(!document.getElementById(id + '_file')){
                             $('#' + id).parent().append(createFileInput(id + '_file'));
                             $('#' + id + '_file').change(function(e){
+
                                 if(e.target.files?.[0]){
                                     data.details[id] = e.target.files[0]
                                 }
                                 $('#' + id).parent().hide();
+                                states.push(function(){
+                                    data.details[id] = '';
+                                    $('#' + id).parent().show();
+                                    if(id === 'final_pic'){
+                                        $('#procedure_b').show();
+                                        $('#procedure_4').show();
+                                        $('#procedure_c').remove();
+                                        isCButtonCreated = false;
+                                    }
+                                    update();
+                                });
                                 if(id === 'final_pic'){
                                     $('#procedure_b').hide();
                                     $('#procedure_4').hide();
                                     showButtonsC();
                                 }
+                                update();
+
                             });
                         }
-
                     });
                 });
             }
@@ -303,8 +345,14 @@
                         $('#procedure_c_1_sub').append(el);
                         $(`#${toFriendlyID(label)}`).click(function(){
                         
-                            $('#procedure_c_1').remove();
+                            $('#procedure_c_1').hide();
                             data.post_service.productos_mtto = label;
+                            states.push(function(){
+                                data.post_service.productos_mtto = '';
+                                $('#procedure_c_1').show();
+                                $(`#${toFriendlyID(label)}`).prop('checked', false);
+                                update();
+                            });
                             update();
 
                         });
@@ -337,7 +385,7 @@
                             }
                             // $('#procedure_c_2').remove();
                             update();
-
+                            
                         });
                     });
                     
@@ -354,7 +402,13 @@
                         $(`#${toFriendlyID(label)}`).click(function(){
                         
                             data.post_service.especialista = label;  
-                            $('#procedure_c_2').remove();
+                            $('#procedure_c_2').hide();
+                            states.push(function(){
+                                data.post_service.especialista = '';
+                                $('#procedure_c_2').show();
+                                $('#' + toFriendlyID(label)).prop('checked', false);
+                                update();
+                            });
                             update();
 
                         });
@@ -367,10 +421,18 @@
                        return; 
                     }
                     $('#procedure_c_3').append(createInput('productos_adicionales_input'));
-                    $('#productos_adicionales_input').change(function(){
+                    $('#productos_adicionales_input').blur(function(){
                         if($(this).val()){
+                            let el = this;
+
                             data.post_service.productos_adicionales = $(this).val();
                             $('#procedure_c_3').hide();
+                            states.push(function(){
+                                $(el).val(data.post_service.productos_adicionales);
+                                data.post_service.productos_adicionales = '';
+                                $('#procedure_c_3').show();
+                                update();
+                            });
                             update();
                         }
                     });
@@ -381,10 +443,17 @@
                        return; 
                     }
                     $('#procedure_c_4').append(createInput('servicio_futuro_input'));
-                    $('#servicio_futuro_input').change(function(){
+                    $('#servicio_futuro_input').blur(function(){
                         if($(this).val()){
+                            let el = this;
                             data.post_service.servicio_futuro = $(this).val();
                             $('#procedure_c_4').hide();
+                            states.push(function(){
+                                $(el).val(data.post_service.servicio_futuro);
+                                data.post_service.servicio_futuro = '';
+                                $('#procedure_c_4').show();
+                                update();
+                            });
                             update();
                         }
                     });
@@ -417,8 +486,14 @@
                         $('#procedure_d_1_sub').append(el);
                         $(`#${toFriendlyID(label)}`).click(function(){
                         
-                            $('#procedure_d_1').remove();
+                            $('#procedure_d_1').hide();
                             data.anotaciones_generales = label;
+                            states.push(function(){
+                                data.anotaciones_generales = '';
+                                $('#procedure_d_1').show();
+                                $('#' + toFriendlyID(label)).prop('checked', false);
+                                update();
+                            });
                             update();
 
                         });
@@ -457,8 +532,8 @@
         const goToTransitions = function(){
             
             if(!document.querySelector('#procedure_7'))
-                $('#procedure').append('<div id="procedure_7" class="procedure"><button class="btn btn-primary" id="transicion_type">TIPO TRANSICION</button></div>')
-            $('#procedure_4').hide();
+                $('#procedure_4').append('<div id="procedure_7" class="procedure"><button class="btn btn-primary" id="transicion_type">TIPO TRANSICION</button></div>')
+            $('#procedure_4_sub').remove();
 
             $('#procedure_7').append('<div class="procedure" id="procedure_7_sub"></div>');
 
@@ -499,98 +574,8 @@
             return label.replace(new RegExp('( )', 'g'), '_').replace(new RegExp('/', 'g'), '_').toLowerCase();
         }
 
-        const start = function(){
-            $('#logo').hide();
-            $('#main_container').addClass('main_open');
-            $('#main_container').removeClass('justify-content-center');
-            $('#procedure').attr('style', 'display: flex;');
-
-            $('#nombre').click(function(){
-                if(!document.querySelector('#full_name')){
-                    $('#procedure_1').append('<input id="full_name" name="full_name" type="text" class="form-control">')
-                    $('#full_name').change(function(){
-                        let val = $(this).val();
-
-                        if(val){
-
-                            let date = new Date();
-                            data.datos_generales.date = `${padStart(date.getDate())}/${padStart(date.getMonth())}/${date.getFullYear()}`;
-                            data.datos_generales.nombre = val;
-                            update();
-                          
-                            $('#procedure_1').remove();
-                        }
-                    });
-                }
-            });
-
-            $('#consentimiento').click(function(){
-                if(!document.querySelector('#documento_firmado')){
-                    let documento_firmado = $(`<div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="documento_firmado">
-                        <label class="form-check-label" for="documento_firmado">
-                            Documento Firmado
-                        </label>
-                    </div>`)
-                    let notification_de = $(`<div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="notification_de">
-                        <label class="form-check-label" for="notification_de">
-                            Notificacion de alergia
-                        </label></div>
-                        <div id="alergia_container"></div>
-                    `);
-                    $('#procedure_2').append(documento_firmado, notification_de);
-
-                    $('#notification_de').change(function(){
-                        if($(this).prop('checked')){
-                            if(!document.querySelector('alergia')){
-                                $('#alergia_container').append(`<input id="alergia" name="alergia" type="text" class="form-control">`);
-                                $('#alergia').change(function(){
-                                    let val = $(this).val();
-                                    if(val){
-                                        data.datos_generales.documento_firmado = $('#documento_firmado').prop('checked');
-                                        data.datos_generales.notification_de_alergia = $('#notification_de').prop('checked');
-                                        data.datos_generales.alergia = val;
-                                        update();
-
-                                        $('#procedure_2').remove();
-                                    }
-                                });
-                            }
-                        } else {
-                            $('#alergia').remove();
-                        }
-                    });
-                }
-            });
-
-            $('#inicial_pic').click(function(){
-                if(!document.getElementById('initial_pic_label')){
-                    
-                    $('#procedure_3').append(createFileInput('initial_pic'))
-                    $('#initial_pic').change(function(e){
-                        let file = e.target.files[0];
-                        if(file){
-                            let date = new Date();
-                            let hours = date.getHours();
-                            let am = "AM";
-                            if(hours > 12){
-                                hours -= 12;
-                                am = "PM"
-                            }
-
-                            data.datos_generales.inicial_pic = file;
-                            data.datos_generales.uploaded_at = `${padStart(hours)}:${padStart(date.getMinutes())} ${am}`;
-                            $('#procedure_3').remove();
-                            update();
-                        }
-                    });
-                } 
-            });
-
-            $('#procedimiento').click(function(){
-
-                if(document.querySelector('#procedure_4_sub')){
+        const goToProcedures = function(){
+            if(document.querySelector('#procedure_4_sub')){
                     return;
                 }
                 let date = new Date();
@@ -625,16 +610,36 @@
                                 $('#procedure_4_sub').append(createCheckbox(toFriendlyID(label), label));
                                 $('#' + toFriendlyID(label)).click(function(){
 
+                                    let item = $(this);
                                     if(data.procedimiento.tipo_pestanas){
                                         data.is_modified = true;
                                         data.modificacion.tipo_pestanas = type;
                                         data.modificacion.label = label;
                                         data.modificacion.tipo_transicion = '';
+                                        states.push(function(){
+                                            data.is_modified = false;
+                                            data.modificacion.tipo_pestanas = '';
+                                            data.modificacion.label = '';
+                                            data.modificacion.tipo_transicion = '';
+                                            update();
+                                        });
                                     } else {
                                         data.procedimiento.tipo_pestanas = type;
                                         data.procedimiento.label = label;
                                         data.procedimiento.tipo_transicion = '';
+                                        states.push(function(){
+                                            data.is_modified = false;
+                                            data.procedimiento.tipo_pestanas = '';
+                                            data.procedimiento.label = '';
+                                            data.procedimiento.tipo_transicion = '';
+                                            data.modificacion.tipo_pestanas = '';
+                                            data.modificacion.label = '';
+                                            data.modificacion.tipo_transicion = '';
+                                            $('#procedimiento').text('PROCEDIMIENTO');
+                                            update();
+                                        });
                                     }
+                                    
                                     
                                     update();
                                     
@@ -652,15 +657,37 @@
                                 $('#transicion').click(function(){
 
                                     let label = 'TRANSICION';
+                                    let item = $(this);
                                     if(data.procedimiento.tipo_pestanas){
                                         data.is_modified = true;
                                         data.modificacion.tipo_pestanas = type;
                                         data.modificacion.label = label;
                                         data.modificacion.tipo_transicion = '';
+                                        states.push(function(){
+                                            data.is_modified = false;
+                                            data.modificacion.tipo_pestanas = '';
+                                            data.modificacion.label = '';
+                                            data.modificacion.tipo_transicion = '';
+                                            item.prop('checked', false);
+                                            goToProcedures();
+                                            update();
+                                        });
                                     } else {
                                         data.procedimiento.tipo_pestanas = type;
                                         data.procedimiento.label = label;
                                         data.procedimiento.tipo_transicion = '';
+                                        states.push(function(){
+                                            data.is_modified = false;
+                                            data.procedimiento.tipo_pestanas = '';
+                                            data.procedimiento.label = '';
+                                            data.procedimiento.tipo_transicion = '';
+                                            data.modificacion.tipo_pestanas = '';
+                                            data.modificacion.label = '';
+                                            data.modificacion.tipo_transicion = '';
+                                            goToProcedures();
+                                            $('#procedimiento').text('PROCEDIMIENTO');
+                                            update();
+                                        });
                                     }
                                     
                                     update();
@@ -701,9 +728,130 @@
                         });
                     })
                 });
+        }
+
+        const start = function(){
+            $('#logo').hide();
+            $('#main_container').addClass('main_open');
+            $('#main_container').removeClass('justify-content-center');
+            $('#procedure').attr('style', 'display: flex;');
+
+            $('#nombre').click(function(){
+                if(!document.querySelector('#full_name')){
+                    $('#procedure_1').append('<input id="full_name" name="full_name" type="text" class="form-control">')
+                    $('#full_name').blur(function(){
+                        let val = $(this).val();
+
+                        if(val){
+
+                            let date = new Date();
+                            data.datos_generales.date = `${padStart(date.getDate())}/${padStart(date.getMonth())}/${date.getFullYear()}`;
+                            data.datos_generales.nombre = val;
+
+                            states.push(function(){
+                                data.datos_generales.nombre = '';
+                                $('#full_name').val(val);
+                                $('#procedure_1').show();
+                                update();
+                            });
+                            update();
+                          
+                            $('#procedure_1').hide();
+                        }
+                    });
+                }
+            });
+
+            $('#consentimiento').click(function(){
+                if(!document.querySelector('#documento_firmado')){
+                    let documento_firmado = $(`<div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="documento_firmado">
+                        <label class="form-check-label" for="documento_firmado">
+                            Documento Firmado
+                        </label>
+                    </div>`)
+                    let notification_de = $(`<div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="notification_de">
+                        <label class="form-check-label" for="notification_de">
+                            Notificacion de alergia
+                        </label></div>
+                        <div id="alergia_container"></div>
+                    `);
+                    $('#procedure_2').append(documento_firmado, notification_de);
+
+                    $('#notification_de').change(function(){
+                        if($(this).prop('checked')){
+                            if(!document.querySelector('alergia')){
+                                $('#alergia_container').append(`<input id="alergia" name="alergia" type="text" class="form-control">`);
+                                $('#alergia').blur(function(){
+                                    let val = $(this).val();
+                                    if(val){
+                                        data.datos_generales.documento_firmado = $('#documento_firmado').prop('checked');
+                                        data.datos_generales.notification_de_alergia = $('#notification_de').prop('checked');
+                                        data.datos_generales.alergia = val;
+                                        states.push(function(){
+                                            data.datos_generales.documento_firmado = false;
+                                            data.datos_generales.notification_de_alergia = false;
+                                            data.datos_generales.alergia = '';
+                                            $('#alergia').val(val);
+                                            $('#procedure_2').show();
+                                            update();
+                                        });
+                                        update();
+
+                                        $('#procedure_2').hide();
+                                    }
+                                });
+                            }
+                        } else {
+                            $('#alergia').remove();
+                        }
+                    });
+                }
+            });
+
+            $('#inicial_pic').click(function(){
+                if(!document.getElementById('initial_pic_label')){
+                    
+                    $('#procedure_3').append(createFileInput('initial_pic'))
+                    $('#initial_pic').change(function(e){
+                        let file = e.target.files[0];
+                        if(file){
+                            let date = new Date();
+                            let hours = date.getHours();
+                            let am = "AM";
+                            if(hours > 12){
+                                hours -= 12;
+                                am = "PM"
+                            }
+
+                            data.datos_generales.inicial_pic = file;
+                            data.datos_generales.uploaded_at = `${padStart(hours)}:${padStart(date.getMinutes())} ${am}`;
+                            $('#procedure_3').hide();
+                            states.push(function(){
+                                data.datos_generales.inicial_pic = null;
+                                $('#initial_pic').val(null);
+                                $('#procedure_3').show();
+                                update();
+                            });
+                            update();
+                        }
+                    });
+                } 
+            });
+
+            $('#procedimiento').click(function(){
+                goToProcedures();
             });
 
         }
+
+        $('#back_button').click(function(){
+            if(states.length){
+                let func = states.pop();
+                func();
+            }
+        });
 
         $('#logo').click(function(){
             start();
