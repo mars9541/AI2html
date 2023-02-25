@@ -21,6 +21,8 @@
             background-position: bottom right, top right, bottom left, top left, top, left, bottom, right;
             background-size: 140px, 140px, 140px, 140px, 100px 2.8px, 2.8px, 100px 2.8px, 2.6px;
             background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat-x, repeat-y, repeat-x, repeat-y;    
+            /* min-height: calc(100vh - 48px); */
+            /* height: fit-content; */
         }
         .base_title {
             font-size: 40px;
@@ -28,6 +30,7 @@
         }
         .main_open {
             padding-top: 72px;
+            padding-bottom: 72px;
         }
         .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-primary:focus-within {
             background-color:rgb(184, 142, 140);
@@ -365,6 +368,8 @@
                     });
                 });
                 $('#servicio_adiciona').click(function(){
+                    if(document.querySelector('#procedure_c_2_sub'))
+                        return;
                     let labels = [
                         'Remoción',
                         'Henna',
@@ -427,7 +432,7 @@
                        return; 
                     }
                     $('#procedure_c_3').append(createInput('productos_adicionales_input'));
-                    $('#productos_adicionales_input').blur(function(){
+                    $('#productos_adicionales_input').change(function(){
                         if($(this).val()){
                             let el = this;
 
@@ -449,7 +454,7 @@
                        return; 
                     }
                     $('#procedure_c_4').append(createInput('servicio_futuro_input'));
-                    $('#servicio_futuro_input').blur(function(){
+                    $('#servicio_futuro_input').change(function(){
                         if($(this).val()){
                             let el = this;
                             data.post_service.servicio_futuro = $(this).val();
@@ -745,7 +750,7 @@
             $('#nombre').click(function(){
                 if(!document.querySelector('#full_name')){
                     $('#procedure_1').append('<input id="full_name" name="full_name" type="text" class="form-control">')
-                    $('#full_name').blur(function(){
+                    $('#full_name').change(function(){
                         let val = $(this).val();
 
                         if(val){
@@ -789,7 +794,7 @@
                         if($(this).prop('checked')){
                             if(!document.querySelector('alergia')){
                                 $('#alergia_container').append(`<input id="alergia" name="alergia" type="text" class="form-control">`);
-                                $('#alergia').blur(function(){
+                                $('#alergia').change(function(){
                                     let val = $(this).val();
                                     if(val){
                                         data.datos_generales.documento_firmado = $('#documento_firmado').prop('checked');
