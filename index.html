@@ -140,8 +140,6 @@
 <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
 <script src="./bootstrap/js/bootstrap.min.js"></script>
 <script>
-
-    
     const padStart = function(text, length = 2, replacedString = '0'){
         let newText = text + '';
         while(newText.length < length){
@@ -276,6 +274,9 @@
                         'Regular',
                         'Antiallergic'
                     ];
+                    $('#procedure_b_2').hide();
+                    $('#procedure_b_3').hide();
+                    $('#procedure_b_4').hide();
                     $('#procedure_b_1').append('<div id="procedure_b_1_sub" class="procedure"></div>');
 
                     labels.forEach(label => {
@@ -285,11 +286,17 @@
                             
                             $('#procedure_b_1').hide();
                             $('#procedure_b_1_sub').remove();
+                            $('#procedure_b_2').show();
+                            $('#procedure_b_3').show();
+                            $('#procedure_b_4').show();
                             
                             data.details.tipo_de_glue = label;
                             states.push(function(){
                                 data.details.tipo_de_glue = null;
                                 $('#procedure_b_1').show();
+                                $('#procedure_b_2').hide();
+                                $('#procedure_b_3').hide();
+                                $('#procedure_b_4').hide();
                                 update();
                                 initTipoDeGlue();
                             });
@@ -313,15 +320,16 @@
                                 states.push(function(){
                                     data.details[id] = '';
                                     $('#' + id).parent().show();
-                                    if(id === 'final_pic'){
+                                    if(!['maping_pic', 'eyes_pic', 'final_pic'].every(f => data.details[f])){
                                         $('#procedure_b').show();
                                         $('#procedure_4').show();
                                         $('#procedure_c').remove();
                                         isCButtonCreated = false;
                                     }
+                                    
                                     update();
                                 });
-                                if(id === 'final_pic'){
+                                if(['maping_pic', 'eyes_pic', 'final_pic'].every(f => data.details[f])){
                                     $('#procedure_b').hide();
                                     $('#procedure_4').hide();
                                     showButtonsC();
@@ -345,7 +353,7 @@
 
                 $('#procedure').append('<div id="procedure_c" class="procedure"></div>')
                 $('#procedure_c').append('<div id="procedure_c_1" class="procedure"><button class="btn btn-primary" id="productos_mtto">PRODUCTOS MTTO</button></div>');
-                $('#procedure_c').append('<div id="procedure_c_2" class="procedure"><button class="btn btn-primary" id="servicio_adiciona">SERVICIO ADICIONA</button></div>');
+                $('#procedure_c').append('<div id="procedure_c_2" class="procedure"><button class="btn btn-primary" id="servicio_adiciona">SERVICIO ADICIONALES</button></div>');
                 $('#procedure_c').append('<div id="procedure_c_3" class="procedure"><button class="btn btn-primary" id="productos_adicionales">PRODUCTOS ADICIONALES</button></div>');
                 $('#procedure_c').append('<div id="procedure_c_4" class="procedure"><button class="btn btn-primary" id="servicio_futuro">SERVICIO FUTURO</button></div>');
                 
@@ -390,6 +398,8 @@
                         'Lifting de pestañas',
                         'Blanqueamiento dental',
                         'Henna',
+                        'Paraffin Hands',
+                        'Paraffin Feet'
                     ];
                     $('#procedure_c_2').append('<div id="procedure_c_2_sub" class="procedure"></div>');
 
@@ -398,6 +408,10 @@
                         $('#procedure_c_2_sub').append(el);
                         $(`#${toFriendlyID(label)}`).change(function(){
                         
+                            if($(this).prop('checked') && data.post_service.servicio_adiciona.length >= 3){
+                                $(this).prop('checked', false);
+                                return;
+                            }
                             if($(this).prop('checked')){
                                 data.post_service.servicio_adiciona.push(label);
                             } else {
@@ -432,6 +446,19 @@
                             update();
 
                         });
+                    });
+                    $('#procedure_c_2_sub').append(createInput('custom_especialista'));
+                    $('#custom_especialista').change(function(){
+                        let especialista = $(this).val();
+                        data.post_service.especialista = especialista;  
+                            $('#procedure_c_2').hide();
+                            states.push(function(){
+                                data.post_service.especialista = '';
+                                $('#procedure_c_2').show();
+                                $('#custom_especialista').val(especialista);
+                                update();
+                            });
+                        update();
                     });
 
                 });
