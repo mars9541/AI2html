@@ -248,6 +248,10 @@
             $('#procedimiento').text('MODIFICACION');
             showButtonsB();
         }
+
+        const capitalLetter = function (str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
         
         const showButtonsB = function(){
             
@@ -325,6 +329,8 @@
                                 update();
 
                             });
+
+                            $('#' + id + '_file').click()
                         }
                     });
                 });
@@ -523,8 +529,6 @@
 
         }
         
-
-
         const goToMotives = function(){
             $('#procedure').append('<div id="procedure_6" class="procedure"><button class="btn btn-primary" id="motivos">MOTIVOS</button></div>')
             $('#procedure_4').hide();
@@ -596,13 +600,13 @@
 
                 let fullSet = createCheckbox('full_set', 'Full set');
                 let refill = createCheckbox('refill', 'Refill');
-                let halfSet = createCheckbox('half_set', 'Half set');
+                // let halfSet = createCheckbox('half_set', 'Half set');
                 let remocion = createCheckbox('remocion', 'Remoción');
 
                 $('#procedure_4').append('<div class="procedure" id="procedure_4_sub"></div>');
                 $('#procedure_4_sub').append(fullSet);
                 $('#procedure_4_sub').append(refill);
-                $('#procedure_4_sub').append(halfSet);
+                // $('#procedure_4_sub').append(halfSet);
                 $('#procedure_4_sub').append(remocion);
 
                 $(['#full_set', '#refill', '#half_set']).each(function(index, item){
@@ -757,14 +761,18 @@
                         let val = $(this).val();
 
                         if(val){
-
+                            const name = val.split(" ");
+                            let nombre = "";
+                            for (i in name) {
+                                nombre += capitalLetter(name[i]) + " ";
+                            }
                             let date = new Date();
-                            data.datos_generales.date = `${padStart(date.getDate())}/${padStart(date.getMonth())}/${date.getFullYear()}`;
-                            data.datos_generales.nombre = val;
+                            data.datos_generales.date = `${padStart(date.getMonth())}/${padStart(date.getDate())}/${date.getFullYear()}`;
+                            data.datos_generales.nombre = nombre;
 
                             states.push(function(){
                                 data.datos_generales.nombre = '';
-                                $('#full_name').val(val);
+                                $('#full_name').val(nombre);
                                 $('#procedure_1').show();
                                 update();
                             });
@@ -851,6 +859,8 @@
                             update();
                         }
                     });
+
+                    $("#initial_pic").click();
                 } 
             });
 
@@ -867,7 +877,7 @@
             }
         });
 
-        $('#logo').click(function(){
+        $('#main_container').click(function(){
             start();
         });
     });
