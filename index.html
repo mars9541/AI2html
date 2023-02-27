@@ -376,6 +376,7 @@
                             states.push(function(){
                                 data.post_service.productos_mtto = '';
                                 $('#procedure_c_1').show();
+                                $('#procedure_c').show();
                                 $(`#${toFriendlyID(label)}`).prop('checked', false);
                                 update();
                             });
@@ -397,7 +398,6 @@
                         'Lifting de cejas',
                         'Lifting de pestañas',
                         'Blanqueamiento dental',
-                        'Henna',
                         'Paraffin Hands',
                         'Paraffin Feet'
                     ];
@@ -430,23 +430,23 @@
                         'Cabina',
                     ]
 
-                    especialistas.forEach(label => {
-                        let el = createCheckbox(toFriendlyID(label), label);
-                        $('#procedure_c_2_sub').append(el);
-                        $(`#${toFriendlyID(label)}`).click(function(){
+                    // especialistas.forEach(label => {
+                    //     let el = createCheckbox(toFriendlyID(label), label);
+                    //     $('#procedure_c_2_sub').append(el);
+                    //     $(`#${toFriendlyID(label)}`).click(function(){
                         
-                            data.post_service.especialista = label;  
-                            $('#procedure_c_2').hide();
-                            states.push(function(){
-                                data.post_service.especialista = '';
-                                $('#procedure_c_2').show();
-                                $('#' + toFriendlyID(label)).prop('checked', false);
-                                update();
-                            });
-                            update();
+                    //         data.post_service.especialista = label;  
+                    //         $('#procedure_c_2').hide();
+                    //         states.push(function(){
+                    //             data.post_service.especialista = '';
+                    //             $('#procedure_c_2').show();
+                    //             $('#' + toFriendlyID(label)).prop('checked', false);
+                    //             update();
+                    //         });
+                    //         update();
 
-                        });
-                    });
+                    //     });
+                    // });
                     $('#procedure_c_2_sub').append(createInput('custom_especialista'));
                     $('#custom_especialista').change(function(){
                         let especialista = $(this).val();
@@ -455,6 +455,7 @@
                             states.push(function(){
                                 data.post_service.especialista = '';
                                 $('#procedure_c_2').show();
+                                $('#procedure_c').show();
                                 $('#custom_especialista').val(especialista);
                                 update();
                             });
@@ -477,6 +478,7 @@
                             states.push(function(){
                                 $(el).val(data.post_service.productos_adicionales);
                                 data.post_service.productos_adicionales = '';
+                                $('#procedure_c').show();
                                 $('#procedure_c_3').show();
                                 update();
                             });
@@ -498,6 +500,7 @@
                             states.push(function(){
                                 $(el).val(data.post_service.servicio_futuro);
                                 data.post_service.servicio_futuro = '';
+                                $('#procedure_c').show();
                                 $('#procedure_c_4').show();
                                 update();
                             });
@@ -513,6 +516,9 @@
             
             if(!isDButtonCreated){
                 isDButtonCreated = true;
+                if(document.querySelector('#procedure_d')){
+                    return;
+                }
 
                 $('#procedure').append('<div id="procedure_d" class="procedure"></div>')
                 $('#procedure_d').append('<div id="procedure_d_1" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
@@ -627,16 +633,17 @@
 
                 let fullSet = createCheckbox('full_set', 'Full set');
                 let refill = createCheckbox('refill', 'Refill');
-                // let halfSet = createCheckbox('half_set', 'Half set');
+                let halfSet = createCheckbox('half_set', 'Half set');
                 let remocion = createCheckbox('remocion', 'Remoción');
 
                 $('#procedure_4').append('<div class="procedure" id="procedure_4_sub"></div>');
                 $('#procedure_4_sub').append(fullSet);
                 $('#procedure_4_sub').append(refill);
-                // $('#procedure_4_sub').append(halfSet);
+                $('#procedure_4_sub').append(halfSet);
                 $('#procedure_4_sub').append(remocion);
 
-                $(['#full_set', '#refill', '#half_set']).each(function(index, item){
+                //'#half_set'
+                $(['#full_set', '#refill']).each(function(index, item){
                     
                     $(item).change(function(){
                         if($(this).prop('checked')){
