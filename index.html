@@ -662,6 +662,7 @@
                         states.push(function(){
                             $('#procedure_4').show();
                             item.prop('checked', false);
+                            remocion.remove();
                         });
                     });
                 }
@@ -792,9 +793,33 @@
                                 data.modificacion.tipo_pestanas = type;
                                 data.modificacion.label = label;
                                 data.modificacion.tipo_transicion = '';
+                                states.push(function(){
+                                    data.is_modified = false;
+                                    data.procedimiento.tipo_pestanas = '';
+                                    data.procedimiento.label = '';
+                                    data.procedimiento.tipo_transicion = '';
+                                    data.modificacion.tipo_pestanas = '';
+                                    data.modificacion.label = '';
+                                    data.modificacion.tipo_transicion = '';
+                                    goToProcedures();
+                                    $('#procedimiento').text('PROCEDIMIENTO');
+                                    update();
+                                });
                             } else {
                                 data.procedimiento.tipo_pestanas = type;
                                 data.procedimiento.label = label;
+                                states.push(function(){
+                                    data.is_modified = false;
+                                    data.procedimiento.tipo_pestanas = '';
+                                    data.procedimiento.label = '';
+                                    data.procedimiento.tipo_transicion = '';
+                                    data.modificacion.tipo_pestanas = '';
+                                    data.modificacion.label = '';
+                                    data.modificacion.tipo_transicion = '';
+                                    goToProcedures();
+                                    $('#procedimiento').text('PROCEDIMIENTO');
+                                    update();
+                                });
                             }
                             
                             update();
