@@ -1,14 +1,16 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PESTAÑAS</title>
-    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PESTAÑAS</title>
+        <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet">
+        <style>
         body {
             padding: 24px;
             font-family: 'Montserrat', sans-serif;
@@ -22,6 +24,7 @@
             background-position: bottom right, top right, bottom left, top left, top, left, bottom, right;
             background-size: 140px, 140px, 140px, 140px, 100px 2.8px, 2.8px, 100px 2.8px, 2.6px;
             background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat-x, repeat-y, repeat-x, repeat-y;    
+            max-width: 380px;
         }
         .base_title {
             font-size: 40px;
@@ -111,35 +114,42 @@
         
         
     </style>
-</head>
-<body>
-    <div class="container base_page">
-        <div id="main_container" class="d-flex flex-column h-100 gap-3 justify-content-center align-items-center">
-            <a id="logo"><img src="./assets/img/logo.png" width="300"></a>
-            <h1 class="base_title">
-                PESTAÑAS
-            </h1>
-            <div id="results">
+    </head>
+    <body>
+        <div class="container base_page">
+            <div id="main_container" class="d-flex flex-column h-100 gap-3
+                justify-content-center align-items-center">
+                <a id="logo"><img src="./assets/img/logo.png" width="300"></a>
+                <h1 class="base_title">
+                    PESTAÑAS
+                </h1>
+                <div id="results">
 
+                </div>
+                <div class="flex-column gap-2 forms" id="procedure"
+                    style="display: none;">
+                    <div id="procedure_1" class="procedure"><button class="btn
+                            btn-primary" id="nombre">NOMBRE</button></div>
+                    <div id="procedure_2" class="procedure"><button class="btn
+                            btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>
+                    <div id="procedure_3" class="procedure"><button class="btn
+                            btn-primary" id="inicial_pic">INICIAL PIC</button></div>
+                    <div id="procedure_4" class="procedure"><button class="btn
+                            btn-primary" id="procedimiento">PROCEDIMIENTO</button></div>
+                </div>
+                <div class="mt-5 d-block w-100"></div>
+                <button id="back_button" style="display: none;" class="btn
+                    btn-primary">
+                    Back
+                </button>
             </div>
-            <div class="flex-column gap-2 forms" id="procedure" style="display: none;">
-                <div id="procedure_1" class="procedure"><button class="btn btn-primary" id="nombre">NOMBRE</button></div>
-                <div id="procedure_2" class="procedure"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>
-                <div id="procedure_3" class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>
-                <div id="procedure_4" class="procedure"><button class="btn btn-primary" id="procedimiento">PROCEDIMIENTO</button></div>
-            </div>
-            <div class="mt-5 d-block w-100"></div>
-            <button id="back_button" style="display: none;" class="btn btn-primary">
-                Back
-            </button>
         </div>
-    </div>
-    <footer class="position-absolute bottom-0 text-center w-100">
-        <p class="mb-0 w-100">DERMABLESS ALL RIGHT RESERVED</p>
-    </footer>
-<script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
-<script src="./bootstrap/js/bootstrap.min.js"></script>
-<script>
+        <footer class="position-absolute bottom-0 text-center w-100">
+            <p class="mb-0 w-100">DERMABLESS ALL RIGHT RESERVED</p>
+        </footer>
+        <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
+        <script src="./bootstrap/js/bootstrap.min.js"></script>
+        <script>
     const padStart = function(text, length = 2, replacedString = '0'){
         let newText = text + '';
         while(newText.length < length){
@@ -635,12 +645,26 @@
                 let refill = createCheckbox('refill', 'Refill');
                 let halfSet = createCheckbox('half_set', 'Half set');
                 let remocion = createCheckbox('remocion', 'Remoción');
+                let none = createCheckbox('none', 'None');
 
                 $('#procedure_4').append('<div class="procedure" id="procedure_4_sub"></div>');
                 $('#procedure_4_sub').append(fullSet);
                 $('#procedure_4_sub').append(refill);
                 $('#procedure_4_sub').append(halfSet);
                 $('#procedure_4_sub').append(remocion);
+
+                if(data.procedimiento.tipo_pestanas){
+                    $('#procedure_4_sub').append(none);
+                    $('#none').click(function(e){
+                        let item = $(this);
+                        $('#procedure_4_sub').remove();
+                        $('#procedure_4').hide();
+                        states.push(function(){
+                            $('#procedure_4').show();
+                            item.prop('checked', false);
+                        });
+                    });
+                }
 
                 //'#half_set'
                 $(['#full_set', '#refill']).each(function(index, item){
@@ -916,5 +940,5 @@
         });
     });
 </script>
-</body>
+    </body>
 </html>
