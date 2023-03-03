@@ -243,14 +243,14 @@
                 var blob = $(input)[0].files[0]; //ev.target.files[0];
                 heic2any({
                     blob: blob,
-                    toType: "image/jpg",
+                    toType: "image/png",
                 }).then(function (resultBlob) {
                     var url = URL.createObjectURL(resultBlob);
                     $(input).parent().find(".upload-file").css("background-image", "url("+url+")"); //previewing the uploaded picture
                     //adding converted picture to the original <input type="file">
                     let fileInputElement = $(input)[0];
                     let container = new DataTransfer();
-                    let file = new File([resultBlob], oldFileName+".jpg",{type:"image/jpeg", lastModified:new Date().getTime()});
+                    let file = new File([resultBlob], oldFileName+".png",{type:"image/png", lastModified:new Date().getTime()});
                     container.items.add(file);
 
                     fileInputElement.files = container.files;
@@ -742,7 +742,7 @@
                     $('#procedure_4_sub').remove();
                     goToModifications();
                 });
-                
+
                 $(['#full_set', '#refill']).each(function (index, item) {
 
                     $(item).change(function () {
