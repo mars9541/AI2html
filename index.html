@@ -168,6 +168,7 @@
     </footer>
     <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
     <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <script src="./js/heic2any.js"></script>
     <script>
         const padStart = function (text, length = 2, replacedString = '0') {
             let newText = text + '';
@@ -230,6 +231,35 @@
                     console.log(error);
                 }
             });
+        }
+
+        const convertHeicToJpg = function(input) {
+            var oldFile = $(input).val().split('\\').pop();
+            var oldFileName = oldFile.substr(0, oldFile.lastIndexOf('.')) || oldFile;
+
+            var fileName = $(input).val();
+            var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+            if(fileNameExt == "heic") {
+                var blob = $(input)[0].files[0]; //ev.target.files[0];
+                heic2any({
+                    blob: blob,
+                    toType: "image/jpg",
+                }).then(function (resultBlob) {
+                    var url = URL.createObjectURL(resultBlob);
+                    $(input).parent().find(".upload-file").css("background-image", "url("+url+")"); //previewing the uploaded picture
+                    //adding converted picture to the original <input type="file">
+                    let fileInputElement = $(input)[0];
+                    let container = new DataTransfer();
+                    let file = new File([resultBlob], oldFileName+".jpg",{type:"image/jpeg", lastModified:new Date().getTime()});
+                    container.items.add(file);
+
+                    fileInputElement.files = container.files;
+                })
+                .catch(function (x) {
+                    console.log(x.code);
+                    console.log(x.message);
+                });
+            }
         }
 
         $(document).ready(function () {
@@ -377,6 +407,8 @@
                             if (!document.getElementById(id + '_file')) {
                                 $('#' + id).parent().append(createFileInput(id + '_file'));
                                 $('#' + id + '_file').change(function (e) {
+
+                                    convertHeicToJpg(this);
 
                                     if (e.target.files?.[0]) {
                                         data.details[id] = e.target.files[0]
@@ -706,6 +738,11 @@
                 }
 
                 //'#half_set'
+                $('#half_set').change(function() {
+                    $('#procedure_4_sub').remove();
+                    goToModifications();
+                });
+                
                 $(['#full_set', '#refill']).each(function (index, item) {
 
                     $(item).change(function () {
@@ -934,7 +971,7 @@
                         $('#documento_firmado').change(function () {
                             if ($(this).prop('checked')) {
                                 formData.append("consentimiento", "Documento Firmado");
-                                $('#procedure_2').hide();
+                                // $('#procedure_2').hide();
                                 update();
                             }
                         });
@@ -995,6 +1032,8 @@
 
                         $('#procedure_3').append(createFileInput('initial_pic'))
                         $('#initial_pic').change(function (e) {
+                            convertHeicToJpg(this);
+
                             let file = e.target.files[0];
                             if (file) {
                                 let date = new Date();
