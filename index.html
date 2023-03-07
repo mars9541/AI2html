@@ -172,6 +172,7 @@
     </footer>
     <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
     <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
     <script src="./js/heic2any.js"></script>
     <script>
         const padStart = function (text, length = 2, replacedString = '0') {
@@ -213,7 +214,6 @@
         let isCButtonCreated = false;
         let isDButtonCreated = false;
 
-        let obj = {};
         const onSend = function () {
             formData.append("inicio", $("#initial_pic").get(0).files[0]);
             formData.append("maping", $("#maping_pic_file").get(0).files[0]);
@@ -223,7 +223,6 @@
             $.ajax({
                 xhr: function() {
                     var xhr = new window.XMLHttpRequest();
-
                     xhr.upload.addEventListener("progress", function(evt) {
                         if (evt.lengthComputable) {
                             var percentComplete = evt.loaded / evt.total;
@@ -243,41 +242,16 @@
                 type: 'POST',
                 dataType: "json",
                 success: function (res) {
-                    // alert(res.message)
+                    alert(res.message)
                 },
                 error: function (error) {
-                    // console.log(error);
+                    console.log(error);
                 }
             });
         }
 
-        const convertHeicToJpg = function(input) {
-            var oldFile = $(input).val().split('\\').pop();
-            var oldFileName = oldFile.substr(0, oldFile.lastIndexOf('.')) || oldFile;
-
-            var fileName = $(input).val();
-            var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
-            if(fileNameExt == "heic") {
-                var blob = $(input)[0].files[0]; //ev.target.files[0];
-                heic2any({
-                    blob: blob,
-                    toType: "image/png",
-                }).then(function (resultBlob) {
-                    var url = URL.createObjectURL(resultBlob);
-                    $(input).parent().find(".upload-file").css("background-image", "url("+url+")"); //previewing the uploaded picture
-                    //adding converted picture to the original <input type="file">
-                    let fileInputElement = $(input)[0];
-                    let container = new DataTransfer();
-                    let file = new File([resultBlob], oldFileName+".png",{type:"image/png", lastModified:new Date().getTime()});
-                    container.items.add(file);
-
-                    fileInputElement.files = container.files;
-                })
-                .catch(function (x) {
-                    console.log(x.code);
-                    console.log(x.message);
-                });
-            }
+        const clearFormDataItem = function(key) {
+            formData.delete(key);
         }
 
         $(document).ready(function () {
@@ -286,10 +260,12 @@
                 if (data.datos_generales.nombre) {
                     $('#results').append(`<h6>${data.datos_generales.nombre}</h6>`);
                     $('#results').append(`<p>${data.datos_generales.date}</p>`);
+                    clearFormDataItem("date");
                     formData.append("date", data.datos_generales.date);
                 }
                 if (data.datos_generales.inicial_pic) {
                     $('#results').append(`<p>${data.datos_generales.uploaded_at}</p>`)
+                    clearFormDataItem("time");
                     formData.append("time", data.datos_generales.uploaded_at);
                 }
                 if (data.datos_generales.alergia) {
@@ -310,14 +286,17 @@
                 }
 
                 if (data.post_service.servicio_adiciona) {
+                    clearFormDataItem("servicio_adiciona");
                     formData.append("servicio_adiciona", data.post_service.servicio_adiciona);
                 }
 
                 if (data.post_service.especialista) {
+                    clearFormDataItem("servicio_especialista");
                     formData.append("servicio_especialista", data.post_service.especialista);
                 }
 
                 if (data.post_service.servicio_futuro) {
+                    clearFormDataItem("servicio_agendados");
                     formData.append("servicio_agendados", data.post_service.servicio_futuro);
                 }
 
@@ -325,7 +304,6 @@
                     $('#procedure_c').hide();
                     showButtonsD();
                 } else {
-                    $('#procedure_d').remove();
                     isDButtonCreated = false;
                 }
 
@@ -350,8 +328,8 @@
                 return $(`<label id="${id}_label" class="label_file">Accion de tomar<input id="${id}" type="file" style="visibility: hidden; position: absolute" accept="image/png, image/gif, image/jpeg"></label>`);
             }
 
-            const createInput = function (id) {
-                return $(`<input class="form-control" name="${id}" id="${id}">`)
+            const createInput = function (id, placeholder = "") {
+                return $(`<input class="form-control" placeholder="${placeholder}" name="${id}" id="${id}">`);
             }
 
             const goToModifications = function (isRefill = false) {
@@ -448,6 +426,7 @@
                                         $('#procedure_b').hide();
                                         $('#procedure_4').hide();
                                         showButtonsC();
+                                        showButtonsD();
                                     }
                                     update();
 
@@ -462,7 +441,6 @@
 
             }
             const showButtonsC = function () {
-
                 if (!isCButtonCreated) {
                     isCButtonCreated = true;
 
@@ -471,7 +449,6 @@
                     $('#procedure_c').append('<div id="procedure_c_2" class="procedure"><button class="btn btn-primary" id="servicio_adiciona">SERVICIO ADICIONALES</button></div>');
                     $('#procedure_c').append('<div id="procedure_c_3" class="procedure"><button class="btn btn-primary" id="productos_adicionales">PRODUCTOS ADICIONALES</button></div>');
                     $('#procedure_c').append('<div id="procedure_c_4" class="procedure"><button class="btn btn-primary" id="servicio_futuro">SERVICIO FUTURO</button></div>');
-
 
                     $('#productos_mtto').click(function () {
                         let labels = [
@@ -581,6 +558,7 @@
                                     $('#procedure_c_3').show();
                                     update();
                                 });
+                                clearFormDataItem("productos_comprados");
                                 formData.append("productos_comprados", $(this).val());
                                 update();
                             }
@@ -613,15 +591,16 @@
 
             }
             const showButtonsD = function () {
-
+                
                 if (!isDButtonCreated) {
                     isDButtonCreated = true;
                     if (document.querySelector('#procedure_d')) {
                         return;
                     }
-
+                    
                     $('#procedure').append('<div id="procedure_d" class="procedure"></div>')
                     $('#procedure_d').append('<div id="procedure_d_1" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
+                    $('#procedure_d').append('<div id="procedure_d_3" class="procedure"><button class="btn btn-primary" id="anotaciones_otra">ANOTACIONES</button></div>');
                     $('#procedure_d').append('<div id="procedure_d_2" class="procedure"><button class="btn btn-primary" id="enviar">ENVIAR</button></div>');
 
 
@@ -632,6 +611,8 @@
                             'Conforme',
                             'Inconforme'
                         ];
+
+                        if (document.querySelector('#procedure_d_1_sub')) return;
                         $('#procedure_d_1').append('<div id="procedure_d_1_sub" class="procedure"></div>');
 
                         labels.forEach(label => {
@@ -652,13 +633,32 @@
                             });
                         });
                     });
+                    
+                    $("#anotaciones_otra").click(function() {
+                        if (document.querySelector('#procedure_d_3_sub')) return;
+                        $('#procedure_d_3').append('<div id="procedure_d_3_sub" class="procedure"></div>');
+                        $('#procedure_d_3_sub').append(createInput('otra', "Otra"));
+
+                        $('#otra').change(function () {
+                            let otra = $(this).val();
+                            clearFormDataItem("otra");
+                            formData.append("otra", otra);
+                            states.push(function () {
+                                $('#otra').val(otra);
+                                update();
+                            });
+                            update();
+                        });
+                    });
+                    
                     $('#enviar').click(function () {
-                        data.sent_at = new Date();
+                        var date = new Date();
+                        var sendDate = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+                        clearFormDataItem("send_time");
+                        formData.append("send_time", sendDate);
                         onSend();
                     });
-
                 }
-
 
             }
 
@@ -758,11 +758,6 @@
                 }
 
                 //'#half_set'
-                $('#half_set').change(function() {
-                    $('#procedure_4_sub').remove();
-                    goToModifications();
-                });
-
                 $(['#full_set', '#refill']).each(function (index, item) {
 
                     $(item).change(function () {
@@ -787,6 +782,7 @@
                                         data.modificacion.tipo_pestanas = type;
                                         data.modificacion.label = label;
                                         data.modificacion.tipo_transicion = '';
+                                        clearFormDataItem("modificacion");
                                         formData.append("modificacion", type + " " + label.toUpperCase());
                                         states.push(function () {
                                             data.is_modified = false;
@@ -798,6 +794,7 @@
                                     } else {
                                         data.procedimiento.tipo_pestanas = type;
                                         data.procedimiento.label = label;
+                                        clearFormDataItem("procedimiento");
                                         formData.append("procedimiento", type + " " + label.toUpperCase());
                                         data.procedimiento.tipo_transicion = '';
                                         states.push(function () {
@@ -832,6 +829,7 @@
                                         data.is_modified = true;
                                         data.modificacion.tipo_pestanas = type;
                                         data.modificacion.label = label;
+                                        clearFormDataItem("modificacion");
                                         formData.append("modificacion", type + " " + label.toUpperCase());
                                         data.modificacion.tipo_transicion = '';
                                         states.push(function () {
@@ -847,6 +845,7 @@
                                         data.procedimiento.tipo_pestanas = type;
                                         data.procedimiento.label = label;
                                         data.procedimiento.tipo_transicion = '';
+                                        clearFormDataItem("procedimiento");
                                         formData.append("procedimiento", type + " " + label.toUpperCase());
                                         states.push(function () {
                                             data.is_modified = false;
@@ -871,6 +870,19 @@
                     });
                 })
 
+                $('#half_set').change(function() {
+                    $('#procedure_4_sub').remove();
+                    if (!data.procedimiento.tipo_transicion) {
+                        clearFormDataItem("procedimiento");
+                        formData.append("procedimiento", "HALF SET");
+                    } else {
+                        clearFormDataItem("modificacion");
+                        formData.append("modificacion", "HALF SET");
+                    }
+                    update();
+                    goToModifications();
+                });
+
                 $('#remocion').change(function () {
                     let labels = ['Por alergia', 'Nuevas pestañas', 'Inconformidad'];
 
@@ -887,6 +899,7 @@
                                 data.is_modified = true;
                                 data.modificacion.tipo_pestanas = type;
                                 data.modificacion.label = label;
+                                clearFormDataItem("modificacion");
                                 formData.append("modificacion", type + " " + label.toUpperCase());
                                 data.modificacion.tipo_transicion = '';
                                 states.push(function () {
@@ -904,6 +917,7 @@
                             } else {
                                 data.procedimiento.tipo_pestanas = type;
                                 data.procedimiento.label = label;
+                                clearFormDataItem("procedimiento");
                                 formData.append("procedimiento", type + " " + label.toUpperCase());
                                 states.push(function () {
                                     data.is_modified = false;
@@ -947,8 +961,9 @@
                                     nombre += capitalLetter(name[i]) + " ";
                                 }
                                 let date = new Date();
-                                data.datos_generales.date = `${padStart((date.getMonth() * 1 + 1))}/${padStart(date.getDate())}/${date.getFullYear()}`;
+                                data.datos_generales.date = `${padStart(date.getMonth())}/${padStart(date.getDate())}/${date.getFullYear()}`;
                                 data.datos_generales.nombre = nombre;
+                                clearFormDataItem("name");
                                 formData.append("name", nombre);
 
                                 states.push(function () {
@@ -990,6 +1005,7 @@
 
                         $('#documento_firmado').change(function () {
                             if ($(this).prop('checked')) {
+                                clearFormDataItem("consentimiento");
                                 formData.append("consentimiento", "Documento Firmado");
                                 // $('#procedure_2').hide();
                                 update();
@@ -997,6 +1013,7 @@
                         });
                         $('#no_padece_de_alergia').change(function () {
                             if ($(this).prop('checked')) {
+                                clearFormDataItem("consentimiento");
                                 formData.append("consentimiento", "No padece de alergia");
                                 data.datos_generales.documento_firmado = $('#documento_firmado').prop('checked');
                                 data.datos_generales.notification_de_alergia = 'No alergia';
@@ -1016,6 +1033,7 @@
                         });
                         $('#padece_de_alergia').change(function () {
                             if ($(this).prop('checked')) {
+                                clearFormDataItem("consentimiento");
                                 formData.append("consentimiento", "");
                                 if (!document.querySelector('alergia')) {
                                     $('#alergia_container').append(`<input id="alergia" name="alergia" type="text" class="form-control">`);
@@ -1033,6 +1051,7 @@
                                                 $('#procedure_2').show();
                                                 update();
                                             });
+                                            clearFormDataItem("alergia");
                                             formData.append("alergia", val);
                                             update();
 
@@ -1097,7 +1116,7 @@
             $('#main_container').click(function () {
                 start();
             });
-
+            
             $.LoadingOverlaySetup({
                 background              : "rgba(255, 255, 255, 0.8)",
                 backgroundClass         : "",
@@ -1139,12 +1158,42 @@
             });
         });
 
-        $(document).ajaxStart(function() {
+        $(document).ajaxStart(function(){
             $.LoadingOverlay("show");
         });
-        $(document).ajaxStop(function() {
+        $(document).ajaxStop(function(){
             $.LoadingOverlay("hide");
         });
+
+        const convertHeicToJpg = function(input) {
+            var oldFile = $(input).val().split('\\').pop();
+            var oldFileName = oldFile.substr(0, oldFile.lastIndexOf('.')) || oldFile;
+
+            var fileName = $(input).val();
+            var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+            if(fileNameExt == "heic") {
+                var blob = $(input)[0].files[0]; //ev.target.files[0];
+                heic2any({
+                    blob: blob,
+                    toType: "image/png",
+                }).then(function (resultBlob) {
+                    var url = URL.createObjectURL(resultBlob);
+                    $(input).parent().find(".upload-file").css("background-image", "url("+url+")"); //previewing the uploaded picture
+                    //adding converted picture to the original <input type="file">
+                    let fileInputElement = $(input)[0];
+                    let container = new DataTransfer();
+                    let file = new File([resultBlob], oldFileName + ".png",{type:"image/png", lastModified:new Date().getTime()});
+                    container.items.add(file);
+
+                    fileInputElement.files = container.files;
+                    console.log("added");
+                })
+                .catch(function (x) {
+                    console.log(x.code);
+                    console.log(x.message);
+                });
+            }
+        }
     </script>
 </body>
 
