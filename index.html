@@ -479,6 +479,8 @@
                             'Kit Plus',
                             'Productos individuales'
                         ];
+                        if (document.querySelector('#procedure_c_1_sub'))
+                            return;
                         $('#procedure_c_1').append('<div id="procedure_c_1_sub" class="procedure"></div>');
 
                         labels.forEach(label => {
