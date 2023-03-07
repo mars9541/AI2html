@@ -223,6 +223,7 @@
             $.ajax({
                 xhr: function() {
                     var xhr = new window.XMLHttpRequest();
+
                     xhr.upload.addEventListener("progress", function(evt) {
                         if (evt.lengthComputable) {
                             var percentComplete = evt.loaded / evt.total;
@@ -464,9 +465,10 @@
                             let el = createCheckbox(toFriendlyID(label), label);
                             $('#procedure_c_1_sub').append(el);
                             $(`#${toFriendlyID(label)}`).click(function () {
-
                                 $('#procedure_c_1').hide();
                                 data.post_service.productos_mtto = label;
+                                clearFormDataItem("productos_mtto");
+                                formData.append("productos_mtto", label);
                                 states.push(function () {
                                     data.post_service.productos_mtto = '';
                                     $('#procedure_c_1').show();
@@ -872,13 +874,8 @@
 
                 $('#half_set').change(function() {
                     $('#procedure_4_sub').remove();
-                    if (!data.procedimiento.tipo_transicion) {
-                        clearFormDataItem("procedimiento");
-                        formData.append("procedimiento", "HALF SET");
-                    } else {
-                        clearFormDataItem("modificacion");
-                        formData.append("modificacion", "HALF SET");
-                    }
+                    clearFormDataItem("modificacion");
+                    formData.append("modificacion", "HALF SET");
                     update();
                     goToModifications();
                 });
@@ -961,7 +958,7 @@
                                     nombre += capitalLetter(name[i]) + " ";
                                 }
                                 let date = new Date();
-                                data.datos_generales.date = `${padStart(date.getMonth())}/${padStart(date.getDate())}/${date.getFullYear()}`;
+                                data.datos_generales.date = `${padStart(date.getMonth() * 1 + 1)}/${padStart(date.getDate())}/${date.getFullYear()}`;
                                 data.datos_generales.nombre = nombre;
                                 clearFormDataItem("name");
                                 formData.append("name", nombre);
@@ -1017,12 +1014,14 @@
                                 formData.append("consentimiento", "No padece de alergia");
                                 data.datos_generales.documento_firmado = $('#documento_firmado').prop('checked');
                                 data.datos_generales.notification_de_alergia = 'No alergia';
+                                clearFormDataItem("alergia");
+                                formData.append("alergia", "No");
+
                                 states.push(function () {
                                     data.datos_generales.documento_firmado = false;
                                     data.datos_generales.notification_de_alergia = false;
                                     data.datos_generales.alergia = '';
                                     $('#no_padece_de_alergia').prop('checked', false);
-
                                     $('#procedure_2').show();
                                     $('#documento_firmado').prop('checked', false);
                                     update();
