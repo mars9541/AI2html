@@ -220,6 +220,12 @@
             formData.append("eyes", $("#eyes_pic_file").get(0).files[0]);
             formData.append("final", $("#final_pic_file").get(0).files[0]);
 
+            if ( formData.get("productos_comprados") ) {
+                localStorage.setItem("name", formData.get("name"));
+                localStorage.setItem("date", formData.get("date"));
+                window.open("micelania.html", "_self");
+            }
+
             $.ajax({
                 xhr: function() {
                     var xhr = new window.XMLHttpRequest();
