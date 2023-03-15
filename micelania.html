@@ -214,7 +214,7 @@
 
                     return xhr;
                 },
-                url: 'http://localhost:8082/generate',
+                url: 'http://localhost:8082/micelania',
                 cache: false,
                 contentType: false,
                 processData: false,
@@ -345,7 +345,8 @@
         }
 
         const createProCheckboxList = function (flag = false) {
-            console.log(flag)
+            const backTxtId = (flag == 1 ? "modify_txt" : "proce_txt");
+            const modeTxt = (flag == 1 ? " (MOD)" : "");
             const subSelector = (flag == 1 ? "#modificacion_sub" : "#procedimiento_sub");
             const subId = (flag == 1 ? "modificacion_sub" : "procedimiento_sub");
             const sectionId = (flag == 1 ? "#modificacion_section" : "#procedimiento_section");
@@ -379,8 +380,8 @@
                     let selectedText = $("label[for='" + selectedId + "']").text();
                     clearFormDataItem(formDataId);
                     formData.append(formDataId, selectedText.toUpperCase());
-                    $("#proce_txt").remove();
-                    $('#results').append(`<h6 id="proce_txt">${selectedText}</h6>`);
+                    $("#" + backTxtId).remove();
+                    $('#results').append(`<h6 id="${backTxtId}">${selectedText}${modeTxt}</h6>`);
                     $(sectionId).remove();
                     checkShowImageGroup();
                 });
@@ -394,8 +395,8 @@
                     subLabels.forEach(function (label) {
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
-                            $("#proce_txt").remove();
-                            $('#results').append(`<h6 id="proce_txt">${"Wax " + label}</h6>`);
+                            $("#" + backTxtId).remove();
+                            $('#results').append(`<h6 id="${backTxtId}">${"Wax " + label}${modeTxt}</h6>`);
                             $(sectionId).remove();
                             clearFormDataItem(formDataId);
                             formData.append(formDataId, "Wax " + label.toUpperCase());
@@ -413,8 +414,8 @@
                     subLabels.forEach(function (label, pIndex) {
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
-                            $("#proce_txt").remove();
-                            $('#results').append(`<h6 id="proce_txt">${"Lifting " + label}</h6>`);
+                            $("#" + backTxtId).remove();
+                            $('#results').append(`<h6 id="${backTxtId}">${"Lifting " + label}${modeTxt}</h6>`);
                             $(sectionId).remove();
                             clearFormDataItem(formDataId);
                             formData.append(formDataId, "Lifting " + label.toUpperCase());
@@ -433,8 +434,8 @@
                     subLabels.forEach(function (label) {
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
-                            $("#proce_txt").remove();
-                            $('#results').append(`<h6 id="proce_txt">${"Parafina " + label}</h6>`);
+                            $("#" + backTxtId).remove();
+                            $('#results').append(`<h6 id="${backTxtId}">${"Parafina " + label}${modeTxt}</h6>`);
                             $(sectionId).remove();
                             clearFormDataItem(formDataId);
                             formData.append(formDataId, "Parafina " + label.toUpperCase());
@@ -458,9 +459,9 @@
                                 $(subSelector).append(createCheckbox(toFriendlyID(list), list));
                                 $('#' + toFriendlyID(list)).click(function () {
                                     $(subSelector).empty();
-
-                                    $("#proce_txt").remove();
-                                    $('#results').append(`<h6 id="proce_txt">${"Remoción " + label + " " + list}</h6>`);
+                                    $("#" + backTxtId).remove();
+                                    $('#results').append(`<h6 id="${backTxtId}">${"Remoción " + label} ${list}${modeTxt}</h6>`);
+                                    // $('#results').append(`<h6 id="proce_txt">${"Remoción " + label + " " + list}</h6>`);
                                     $(sectionId).remove();
                                     clearFormDataItem(formDataId);
                                     formData.append(formDataId, "Remoción " + label.toUpperCase() + " " + list.toUpperCase());
@@ -629,14 +630,16 @@
             }
 
             $('#procedure').append('<div id="image_group" class="procedure group-image"></div>')
-            if (especStatus == 5) {
-                $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>');
-            }
+            
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>');
             if (liftingStatus) {
                 $('#image_group').append('<div class="procedure" id="tamno_section"><button class="btn btn-primary" id="tamno_molde">TAMAÑO DE MOLDE</button></div>');
             }
             $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>');
-            $('#image_group').append('<div id="anotaciones_generales_section" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
+
+            if (especStatus == 5) {
+                $('#image_group').append('<div id="anotaciones_generales_section" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
+            }
             
             $(['inicial_pic', 'final_pic']).each(function (i, id) {
                 $('#' + id).click(function () {
