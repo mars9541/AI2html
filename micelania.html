@@ -142,7 +142,9 @@
 <body>
     <div class="container base_page">
         <div id="main_container" class="d-flex flex-column h-100 gap-3 justify-content-center align-items-center">
-            <a id="logo"><img src="./assets/img/logo.png" width="300"></a>
+            <a id="logo">
+                <img src="./assets/img/logo.png" width="300" />
+            </a>
             <h1 class="base_title">
                 Misceláneas
             </h1>
@@ -150,14 +152,11 @@
 
             </div>
             <div class="flex-column gap-2 forms" id="procedure" style="display: none;">
+                <div id="name_section" class="procedure">
+                    <button class="btn btn-primary" id="nombre">NOMBRE</button>
+                </div>
                 <div id="procedimiento_section" class="procedure group-b">
                     <button class="btn btn-primary" id="procedimiento">PROCEDIMIENTO</button>
-                </div>
-                <div id="especialista_section" class="procedure group-b">
-                    <button class="btn btn-primary" id="especialista">ESPECIALISTA</button>
-                </div>
-                <div id="consentimiento_section" class="procedure group-b">
-                    <button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button>
                 </div>
             </div>
             <div class="mt-5 d-block w-100"></div>
@@ -172,6 +171,21 @@
     <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
     <script src="./js/heic2any.js"></script>
     <script>
+        const states = [];
+        let especStatus = 0;
+        let liftingStatus = 0;
+        let esList = [
+            ["Lisbet", "Dianelys", "Daniela", "Laura", "Susan", "Irianys"],
+            ["Lisbet", "Dianelys", "Daniela", "Laura", "Claudia", "Irianys", "Susan"],
+            ["Yanisbel", "Yariela", "Laura"],
+            ["Lisbet", "Dianelys", "Daniela", "Laura", "Claudia", "Susan", "Yanisbel", "Lien"],
+            ["Irianys", "Laura", "Susan"],
+            ["Lien", "Irianys", "Laura", "Susan"],
+            ["Yanisbel"]
+        ];
+        
+        var formData = new FormData();
+        
         const padStart = function (text, length = 2, replacedString = '0') {
             let newText = text + '';
             while (newText.length < length) {
@@ -179,11 +193,6 @@
             }
             return newText;
         }
-
-        var formData = new FormData();
-        const states = [];
-        
-        let proLabels = [];
 
         const sendRequest = function () {
             alert("sending request..."); return;
@@ -228,12 +237,14 @@
             $('#procedure').attr('style', 'display: flex;');
         }
 
+        const capitalLetter = function (str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
         const createCheckbox = function (id, label, container = false) {
             return $(`<div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="${id}">
-                    <label class="form-check-label" for="${id}">
-                        ${label}
-                    </label></div>
+                    <label class="form-check-label" for="${id}">${label}</label></div>
                     
         ` + (container ? `<div id="${id}_container"></div>` : ''));
         }
@@ -279,6 +290,36 @@
             return label.replace(new RegExp('( )', 'g'), '_').replace(new RegExp('/', 'g'), '_').toLowerCase();
         }
 
+        const Nombre = function() {
+            if (!document.querySelector('#full_name')) {
+                $('#name_section').append('<input id="full_name" name="full_name" type="text" class="form-control">')
+                $('#full_name').change(function () {
+                    let val = $(this).val();
+
+                    if (val) {
+                        const name = val.split(" ");
+                        let nombre = "";
+                        for (i in name) {
+                            nombre += capitalLetter(name[i]) + " ";
+                        }
+                        let date = new Date();
+                        const generate_date = `${padStart(date.getMonth() * 1 + 1)}/${padStart(date.getDate())}/${date.getFullYear()}`;
+                        
+                        clearFormDataItem("name");
+                        formData.append("name", nombre);
+
+                        clearFormDataItem("date");
+                        formData.append("date", generate_date);
+                        
+                        $('#results').append(`<h6>${nombre}</h6>`);
+                        $('#results').append(`<p>${generate_date}</p>`);
+
+                        $('#name_section').hide();
+                    }
+                });
+            }
+        }
+
         const clearFormDataItem = function(key) {
             formData.delete(key);
         }
@@ -286,7 +327,13 @@
         const checkShowImageGroup = function() {
             if ( formData.get("procedimiento") ) {
                 Modificacion();
-
+                if ( !formData.get("especialista") ) {
+                    Especialista();
+                } 
+                if ( !formData.get("consentimiento") ) {
+                    Consentimiento();
+                }
+                
                 if ( formData.get("especialista") && formData.get("consentimiento") ) {
                     ImageGroup();
                 }
@@ -294,123 +341,243 @@
         }
 
         const Procedimiento = function () {
-            if (document.querySelector('#procedimiento_sub')) {
+            createProCheckboxList();
+        }
+
+        const createProCheckboxList = function (flag = false) {
+            console.log(flag)
+            const subSelector = (flag == 1 ? "#modificacion_sub" : "#procedimiento_sub");
+            const subId = (flag == 1 ? "modificacion_sub" : "procedimiento_sub");
+            const sectionId = (flag == 1 ? "#modificacion_section" : "#procedimiento_section");
+            const formDataId = (flag == 1 ? "modify" : "procedimiento");
+            if (document.querySelector(subSelector)) {
                 return;
             }
 
-            $("#procedimiento_section").append('<div id="procedimiento_sub" class="procedure"></div>');
+            $(sectionId).append('<div id="' + subId + '" class="procedure"></div>');
 
-            let labels = [
-                'Henna',
-                'Cejas con pinza',
-                'Wax cejas',
-                'Wax labio superior',
-                'Wax barbilla',
-                'Lifting de cejas',
-                'Lifting de pestañas',
-                'Blanqueamiento dental',
-                'Parafina en las Manos',
-                'Parafina en los Pies',
-            ];
-            
-            proLabels = labels;
-            labels.forEach(label => {
-                let el = createCheckbox(toFriendlyID(label), label);
-                $('#procedimiento_sub').append(el);
-                $(`#${toFriendlyID(label)}`).click(function () {
-                    $('#results').append(`<p>${label}</p>`);
-                    clearFormDataItem("procedimiento");
-                    formData.append("procedimiento", label);
-                    $('#procedimiento_section').hide();
+            let henna = createCheckbox('henna', 'Henna');
+            let cejas = createCheckbox('pinza', 'Cejas con Pinza');
+            let dental = createCheckbox('dental', 'Blanqueamiento Dental');
+            let wax = createCheckbox('wax', 'Wax');
+            let lifting = createCheckbox('lifting', 'Lifting');
+            let parafina = createCheckbox('parafina', 'Parafina');
+            let remocion = createCheckbox('remocion', 'Remoción');
 
+            $(subSelector).append(henna);
+            $(subSelector).append(cejas);
+            $(subSelector).append(dental);
+            $(subSelector).append(wax);
+            $(subSelector).append(lifting);
+            $(subSelector).append(parafina);
+            $(subSelector).append(remocion);
+
+            $(["#henna", "#pinza", "#dental"]).each(function(index, item) {
+                $(item).change(function() {
+                    especStatus = index;
+                    let selectedId = $(this).attr("id");
+                    let selectedText = $("label[for='" + selectedId + "']").text();
+                    clearFormDataItem(formDataId);
+                    formData.append(formDataId, selectedText.toUpperCase());
+                    $("#proce_txt").remove();
+                    $('#results').append(`<h6 id="proce_txt">${selectedText}</h6>`);
+                    $(sectionId).remove();
                     checkShowImageGroup();
                 });
             });
+
+            $("#wax").change(function() {
+                if ($(this).prop('checked')) {
+                    $(subSelector).empty();
+                    let subLabels = ['Cejas', 'Labio Superior', 'Barbilla'];
+
+                    subLabels.forEach(function (label) {
+                        $(subSelector).append(createCheckbox(toFriendlyID(label), label));
+                        $('#' + toFriendlyID(label)).click(function () {
+                            $("#proce_txt").remove();
+                            $('#results').append(`<h6 id="proce_txt">${"Wax " + label}</h6>`);
+                            $(sectionId).remove();
+                            clearFormDataItem(formDataId);
+                            formData.append(formDataId, "Wax " + label.toUpperCase());
+                            especStatus = 3;
+                            checkShowImageGroup();
+                        });
+                    })
+                }
+
+            });
+            $("#lifting").change(function() {
+                if ($(this).prop('checked')) {
+                    $(subSelector).empty();
+                    let subLabels = ['Cejas', 'Pestañas',];
+                    subLabels.forEach(function (label, pIndex) {
+                        $(subSelector).append(createCheckbox(toFriendlyID(label), label));
+                        $('#' + toFriendlyID(label)).click(function () {
+                            $("#proce_txt").remove();
+                            $('#results').append(`<h6 id="proce_txt">${"Lifting " + label}</h6>`);
+                            $(sectionId).remove();
+                            clearFormDataItem(formDataId);
+                            formData.append(formDataId, "Lifting " + label.toUpperCase());
+                            especStatus = 4;
+                            liftingStatus = pIndex;
+                            console.log(pIndex)
+                            checkShowImageGroup();
+                        });
+                    })
+                }
+            });
+            $("#parafina").change(function() {
+                if ($(this).prop('checked')) {
+                    $(subSelector).empty();
+                    let subLabels = ['Manos', 'Pies'];
+                    subLabels.forEach(function (label) {
+                        $(subSelector).append(createCheckbox(toFriendlyID(label), label));
+                        $('#' + toFriendlyID(label)).click(function () {
+                            $("#proce_txt").remove();
+                            $('#results').append(`<h6 id="proce_txt">${"Parafina " + label}</h6>`);
+                            $(sectionId).remove();
+                            clearFormDataItem(formDataId);
+                            formData.append(formDataId, "Parafina " + label.toUpperCase());
+                            especStatus = 5;
+                            checkShowImageGroup();
+                        });
+                    })
+                }
+            });
+            $("#remocion").change(function() {
+                if ($(this).prop('checked')) {
+                    $(subSelector).empty();
+                    let subLabels = ['TattO', 'Cejas'];
+                    subLabels.forEach(function (label) {
+                        $(subSelector).append(createCheckbox(toFriendlyID(label), label));
+                        $('#' + toFriendlyID(label)).click(function () {
+                            $(subSelector).empty();
+                            let sublists = ['Enzimas', 'Laser'];
+
+                            sublists.forEach(function (list) {
+                                $(subSelector).append(createCheckbox(toFriendlyID(list), list));
+                                $('#' + toFriendlyID(list)).click(function () {
+                                    $(subSelector).empty();
+
+                                    $("#proce_txt").remove();
+                                    $('#results').append(`<h6 id="proce_txt">${"Remoción " + label + " " + list}</h6>`);
+                                    $(sectionId).remove();
+                                    clearFormDataItem(formDataId);
+                                    formData.append(formDataId, "Remoción " + label.toUpperCase() + " " + list.toUpperCase());
+
+                                    especStatus = 6;
+                                    checkShowImageGroup();
+                                });
+                            })
+                        });
+                    })
+                }
+            });
+
         }
 
         const Especialista = function () {
-            if (document.querySelector('#custom_especialista')) {
+            if (document.querySelector('#especialista_section')) {
                 return;
             }
-            $('#especialista_section').append(createInput('custom_especialista'));
-            $('#custom_especialista').change(function () {
-                clearFormDataItem("especialista");
-                formData.append( "especialista", $(this).val() );
-                $('#especialista_section').hide();
-            });
 
-            $("#custom_especialista").blur(function() {
-                checkShowImageGroup();
+            $("#procedure").append('<div id="especialista_section" class="procedure group-b"><button class="btn btn-primary" id="especialista">ESPECIALISTA</button></div>');            
+            
+            $("#especialista").click(function() {
+                const labels = esList[especStatus];
+                labels.forEach(function (label) {
+                    $('#especialista_section').append(createCheckbox(toFriendlyID(label), label));
+                    $('#' + toFriendlyID(label)).click(function () {
+                        $('#especialista_section').empty();
+                        
+                        // $("#espec_txt").remove();
+                        // $('#results').append(`<h6 id="espec_txt">${label}</h6>`);
+                        $("#especialista_section").remove();
+                        clearFormDataItem("especialista");
+                        formData.append("especialista", label.toUpperCase());
+    
+                        checkShowImageGroup();
+                    });
+                })
             });
         }
 
         const Consentimiento = function() {
+            if (document.querySelector('#consentimiento_section')) {
+                return false;
+            }
+
+            $("#procedure").append('<div id="consentimiento_section" class="procedure group-b"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>');
+            
             if (document.querySelector('#documento_firmado')) {
                 return false;
             }
-                
-            let documento_firmado = $(`<div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="documento_firmado">
-                <label class="form-check-label" for="documento_firmado">
-                    Documento Firmado
-                </label>
-            </div>`)
-            let allergy = $(`<div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="padece_de_alergia">
-                <label class="form-check-label" for="padece_de_alergia">
-                    Padece de alergia
-                </label></div>
-                <div id="alergia_container"></div>
-            `);
-            let no_allergy = $(`<div class="form-check" style="margin-top: -8px">
-                <input class="form-check-input" type="checkbox" value="" id="no_padece_de_alergia">
-                <label class="form-check-label" for="no_padece_de_alergia">
-                    No padece de alergia
-                </label></div>
-            `);
 
-            $('#consentimiento_section').append(documento_firmado, allergy, no_allergy);
-
-            $('#documento_firmado').change(function () {
-                if ($(this).prop('checked')) {
-                    clearFormDataItem("consentimiento");
-                    formData.append("consentimiento", "Documento Firmado");
-                    checkShowImageGroup();
-                    $('#consentimiento_section').hide();
-                }
-            });
-            $('#no_padece_de_alergia').change(function () {
-                if ($(this).prop('checked')) {
-                    clearFormDataItem("consentimiento");
-                    formData.append("consentimiento", "No padece de alergia");
-                    clearFormDataItem("alergia");
-                    formData.append("alergia", "No");
-
-                    $('#consentimiento_section').hide();
-                    checkShowImageGroup();
-                }
-            });
-            $('#padece_de_alergia').change(function () {
-                if ($(this).prop('checked')) {
-                    clearFormDataItem("consentimiento");
-                    formData.append("consentimiento", "");
-                    if (!document.querySelector('alergia')) {
-                        $('#alergia_container').append(`<input id="alergia" name="alergia" type="text" class="form-control">`);
-                        $('#alergia').change(function () {
-                            let val = $(this).val();
-                            if (val) {
-                                clearFormDataItem("alergia");
-                                formData.append("alergia", val);
-                                checkShowImageGroup();
-
-                                $('#consentimiento_section').hide();
-                            }
-                        });
+            $("#consentimiento").click(function() {
+                let documento_firmado = $(`<div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="documento_firmado">
+                    <label class="form-check-label" for="documento_firmado">
+                        Documento Firmado
+                    </label>
+                </div>`)
+                let allergy = $(`<div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="padece_de_alergia">
+                    <label class="form-check-label" for="padece_de_alergia">
+                        Reacciones previas
+                    </label></div>
+                    <div id="alergia_container"></div>
+                `);
+                let no_allergy = $(`<div class="form-check" style="margin-top: -8px">
+                    <input class="form-check-input" type="checkbox" value="" id="no_padece_de_alergia">
+                    <label class="form-check-label" for="no_padece_de_alergia">
+                        No consentimiento
+                    </label></div>
+                `);
+    
+                $('#consentimiento_section').append(documento_firmado, allergy, no_allergy);
+    
+                $('#documento_firmado').change(function () {
+                    if ($(this).prop('checked')) {
+                        clearFormDataItem("consentimiento");
+                        formData.append("consentimiento", "Documento Firmado");
+                        checkShowImageGroup();
+                        $('#consentimiento_section').hide();
                     }
-                } else {
-                    $('#alergia').remove();
-                }
+                });
+                $('#no_padece_de_alergia').change(function () {
+                    if ($(this).prop('checked')) {
+                        clearFormDataItem("consentimiento");
+                        formData.append("consentimiento", "No consentimiento");
+                        clearFormDataItem("alergia");
+                        formData.append("alergia", "No");
+    
+                        $('#consentimiento_section').hide();
+                        checkShowImageGroup();
+                    }
+                });
+                $('#padece_de_alergia').change(function () {
+                    if ($(this).prop('checked')) {
+                        clearFormDataItem("consentimiento");
+                        formData.append("consentimiento", "");
+                        if (!document.querySelector('alergia')) {
+                            $('#alergia_container').append(`<input id="alergia" name="alergia" type="text" class="form-control">`);
+                            $('#alergia').change(function () {
+                                let val = $(this).val();
+                                if (val) {
+                                    clearFormDataItem("alergia");
+                                    formData.append("alergia", val);
+                                    checkShowImageGroup();
+    
+                                    $('#consentimiento_section').hide();
+                                }
+                            });
+                        }
+                    } else {
+                        $('#alergia').remove();
+                    }
+                });
             });
+
         }
 
         const Modificacion = function () {
@@ -427,36 +594,30 @@
                 
                 $("#modificacion_section").append('<div id="modificacion_sub" class="procedure"></div>');
 
-                let labels = [
-                    'Nuevo procedimiento',
-                    'Motivo del cambio',
-                ];
+                let nuevo_proc = createCheckbox('nuevo_proc', 'Nuevo procedimiento');
+                let motivo_del = createCheckbox('motivo_del', 'Motivo del cambio');
+
+                $('#modificacion_sub').append(nuevo_proc);
+                $('#modificacion_sub').append(motivo_del);
                 
-                labels.forEach((label, index) => {
-                    let el = createCheckbox(toFriendlyID(label), label);
-                    $('#modificacion_sub').append(el);
-                    $(`#${toFriendlyID(label)}`).click(function () {
-                        if (index == 0) {
-                            $("#modificacion_sub").empty();
+                $("#motivo_del").click(function() {
+                    $('#modificacion_sub').append(createInput("modify_input"));
 
-                            proLabels.forEach(plabel => {
-                                let el = createCheckbox(toFriendlyID(plabel), plabel);
-                                $('#modificacion_sub').append(el);
-                                $(`#${toFriendlyID(plabel)}`).click(function () {
-                                    clearFormDataItem("modificacion");
-                                    formData.append("modificacion", plabel);
-                                    $('#modificacion_section').hide();
-
-                                    checkShowImageGroup();
-                                });
-                            });
-                        } else {
-                            clearFormDataItem("modificacion");
-                            formData.append("modificacion", label);
-                        }
-    
-                        checkShowImageGroup();
+                    $('#modify_input').change(function () {
+                        let inputVal = $(this).val();
+                        $("#results").append(`<h6>${inputVal} (MOD)</h6>`);
+                        clearFormDataItem("modify");
+                        formData.append("modify", inputVal);
                     });
+                    
+                    $("#modify_input").blur(function() {
+                        checkShowImageGroup();
+                        $("#modificacion_section").remove();
+                    });
+                });
+                $("#nuevo_proc").click(function() {
+                    $("#modificacion_sub").remove();
+                    createProCheckboxList(true)
                 });
             });
 
@@ -468,8 +629,14 @@
             }
 
             $('#procedure').append('<div id="image_group" class="procedure group-image"></div>')
-            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic">Inicial PIC</button></div>');
+            if (especStatus == 5) {
+                $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>');
+            }
+            if (liftingStatus) {
+                $('#image_group').append('<div class="procedure" id="tamno_section"><button class="btn btn-primary" id="tamno_molde">TAMAÑO DE MOLDE</button></div>');
+            }
             $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>');
+            $('#image_group').append('<div id="anotaciones_generales_section" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
             
             $(['inicial_pic', 'final_pic']).each(function (i, id) {
                 $('#' + id).click(function () {
@@ -479,7 +646,7 @@
                             convertHeicToJpg(this);
                             $('#' + id).parent().hide();
 
-                            if ( $("#inicial_pic_file").val() && $("#final_pic_file").val() ) {
+                            if ( $("#inicial_pic_file").val() || $("#final_pic_file").val() ) {
                                 $('#image_group').hide();
                                 PostService();
                             }
@@ -487,6 +654,39 @@
 
                         $('#' + id + '_file').click()
                     }
+                });
+            });
+
+            $("#tamno_molde").click(function() {
+                if (document.querySelector('#small')) {
+                    return;
+                }
+
+                ["Small", "Medium", "Large"].forEach(function (label) {
+                    $('#tamno_section').append(createCheckbox(toFriendlyID(label), label));
+                    $('#' + toFriendlyID(label)).click(function () {
+                        $('#tamno_section').empty();
+                        
+                        clearFormDataItem("tamno");
+                        formData.append("tamno", label.toUpperCase());
+
+                        PostService();
+                    });
+                })
+            });
+            $("#anotaciones_generales").click(function() {
+                if (document.querySelector('#anotaciones_generales_section_sub')) return;
+                $('#anotaciones_generales_section').append('<div id="anotaciones_generales_section_sub" class="procedure"></div>');
+                $('#anotaciones_generales_section_sub').append(createInput("anotaciones_generales_input"));
+
+                $('#anotaciones_generales_input').change(function () {
+                    let otra = $(this).val();
+                    clearFormDataItem("anotaciones_generales");
+                    formData.append("anotaciones_generales", otra);
+                });
+                
+                $("#anotaciones_generales_input").blur(function() {
+                    PostService();
                 });
             });
 
@@ -500,7 +700,7 @@
             $('#procedure').append('<div id="post_section" class="procedure group-c"></div>')
             $('#post_section').append('<div id="post_service_sub_1" class="procedure"><button class="btn btn-primary" id="product_maintain">PRODUCTOS MANTENIMIENTO</button></div>');
             $('#post_section').append('<div id="post_service_sub_2" class="procedure"><button class="btn btn-primary" id="product_adicion">PRODUCTOS ADICIONALES</button></div>');
-            $('#post_section').append('<div id="post_service_sub_3" class="procedure"><button class="btn btn-primary" id="servicio_areas">SERVICIO DE OTRAS ÁREAS</button></div>');
+            $('#post_section').append('<div id="post_service_sub_3" class="procedure"><button class="btn btn-primary" id="servicio_furtros">SERVICIO DE FUTUROS</button></div>');
                 
             $("#product_maintain").click(function() {
                 if (document.querySelector('#product_maintain_input')) {
@@ -532,18 +732,18 @@
                     CierreProcedimiento();
                 });
             });
-            $("#servicio_areas").click(function() {
-                if (document.querySelector('#servicio_areas_input')) {
+            $("#servicio_furtros").click(function() {
+                if (document.querySelector('#servicio_furtros_input')) {
                     return;
                 }
-                $('#post_service_sub_3').append(createInput('servicio_areas_input'));
-                $('#servicio_areas_input').change(function () {
-                    clearFormDataItem("servicio_areas");
-                    formData.append( "servicio_areas", $(this).val() );
+                $('#post_service_sub_3').append(createInput('servicio_furtros_input'));
+                $('#servicio_furtros_input').change(function () {
+                    clearFormDataItem("servicio_furtros");
+                    formData.append( "servicio_furtros", $(this).val() );
                     $('#post_service_sub_3').hide();
                 });
 
-                $("#servicio_areas_input").blur(function() {
+                $("#servicio_furtros_input").blur(function() {
                     CierreProcedimiento();
                 });
             });
@@ -555,20 +755,7 @@
             }
             
             $('#procedure').append('<div id="cierre_procedimiento" class="procedure"></div>')
-            $('#cierre_procedimiento').append('<div id="anotaciones_generales_section" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
             $('#cierre_procedimiento').append('<div id="" class="procedure"><button class="btn btn-primary" id="enviar">ENVIAR</button></div>');
-            
-            $("#anotaciones_generales").click(function() {
-                if (document.querySelector('#anotaciones_generales_section_sub')) return;
-                $('#anotaciones_generales_section').append('<div id="anotaciones_generales_section_sub" class="procedure"></div>');
-                $('#anotaciones_generales_section_sub').append(createInput("anotaciones_generales_input"));
-
-                $('#anotaciones_generales_input').change(function () {
-                    let otra = $(this).val();
-                    clearFormDataItem("anotaciones_generales");
-                    formData.append("anotaciones_generales", otra);
-                });
-            });
             
             $('#enviar').click(function () {
                 var date = new Date();
@@ -590,24 +777,12 @@
             $('#main_container').click(function () {
                 start();
             });
-            
-            
-        });
 
-        $(document).ajaxStart(function(){
-            $.LoadingOverlay("show");
-        });
-        $(document).ajaxStop(function(){
-            $.LoadingOverlay("hide");
-        });
-        
-        $(document).ready( function() {
             const name = localStorage.getItem("name");
             const date = localStorage.getItem("date");
-
+            
             if (name && date) {
                 start();
-
                 $('#results').append(`<h6>${name}</h6>`);
                 $('#results').append(`<p>${date}</p>`);
             }
@@ -618,9 +793,10 @@
             $('#especialista').click(function () {
                 Especialista();
             });
-            $('#consentimiento').click(function () {
-                Consentimiento();
-            })
+            
+            $('#nombre').click(function () {
+                Nombre();
+            });
 
             $.LoadingOverlaySetup({
                 background              : "rgba(255, 255, 255, 0.8)",
@@ -661,7 +837,14 @@
                 resizeInterval          : 50,
                 zIndex                  : 2147483647
             });
-        } );
+        });
+
+        $(document).ajaxStart(function(){
+            $.LoadingOverlay("show");
+        });
+        $(document).ajaxStop(function(){
+            $.LoadingOverlay("hide");
+        });
     </script>
 </body>
 
