@@ -195,8 +195,7 @@
         }
 
         const sendRequest = function () {
-            alert("sending request..."); return;
-            formData.append("inicio", $("#initial_pic").get(0).files[0]);
+            formData.append("inicio", $("#inicial_pic_file").get(0).files[0]);
             formData.append("final", $("#final_pic_file").get(0).files[0]);
 
             $.ajax({
@@ -214,7 +213,7 @@
 
                     return xhr;
                 },
-                url: 'http://localhost:8082/micelania',
+                url: 'http://localhost:8082/generate/micelania',
                 cache: false,
                 contentType: false,
                 processData: false,
@@ -304,12 +303,16 @@
                         }
                         let date = new Date();
                         const generate_date = `${padStart(date.getMonth() * 1 + 1)}/${padStart(date.getDate())}/${date.getFullYear()}`;
+                        const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
                         
                         clearFormDataItem("name");
                         formData.append("name", nombre);
 
                         clearFormDataItem("date");
                         formData.append("date", generate_date);
+
+                        clearFormDataItem("time");
+                        formData.append("time", time);
                         
                         $('#results').append(`<h6>${nombre}</h6>`);
                         $('#results').append(`<p>${generate_date}</p>`);
@@ -650,7 +653,6 @@
                             $('#' + id).parent().hide();
 
                             if ( $("#inicial_pic_file").val() || $("#final_pic_file").val() ) {
-                                $('#image_group').hide();
                                 PostService();
                             }
                         });
@@ -765,7 +767,7 @@
                 var sendDate = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
                 clearFormDataItem("send_time");
                 formData.append("send_time", sendDate);
-                SendRequest();
+                sendRequest();
             });
         }
 
