@@ -174,6 +174,7 @@
         const states = [];
         let especStatus = 0;
         let liftingStatus = 0;
+        let remocionStatus = 0;
         let esList = [
             ["Lisbet", "Dianelys", "Daniela", "Laura", "Susan", "Irianys"],
             ["Lisbet", "Dianelys", "Daniela", "Laura", "Claudia", "Irianys", "Susan"],
@@ -289,6 +290,10 @@
             return label.replace(new RegExp('( )', 'g'), '_').replace(new RegExp('/', 'g'), '_').toLowerCase();
         }
 
+        const clearFormDataItem = function(key) {
+            formData.delete(key);
+        }
+
         const Nombre = function() {
             if (!document.querySelector('#full_name')) {
                 $('#name_section').append('<input id="full_name" name="full_name" type="text" class="form-control">')
@@ -323,32 +328,8 @@
             }
         }
 
-        const clearFormDataItem = function(key) {
-            formData.delete(key);
-        }
-
-        const checkShowImageGroup = function() {
-            if ( formData.get("procedimiento") ) {
-                Modificacion();
-                if ( !formData.get("especialista") ) {
-                    Especialista();
-                } 
-                if ( !formData.get("consentimiento") ) {
-                    Consentimiento();
-                }
-                
-                if ( formData.get("especialista") && formData.get("consentimiento") ) {
-                    ImageGroup();
-                }
-            }
-        }
-
-        const Procedimiento = function () {
-            createProCheckboxList();
-        }
-
         const createProCheckboxList = function (flag = false) {
-            const backTxtId = (flag == 1 ? "modify_txt" : "proce_txt");
+            const backTxtId = "proce_txt";
             const modeTxt = (flag == 1 ? " (MOD)" : "");
             const subSelector = (flag == 1 ? "#modificacion_sub" : "#procedimiento_sub");
             const subId = (flag == 1 ? "modificacion_sub" : "procedimiento_sub");
@@ -386,7 +367,9 @@
                     $("#" + backTxtId).remove();
                     $('#results').append(`<h6 id="${backTxtId}">${selectedText}${modeTxt}</h6>`);
                     $(sectionId).remove();
-                    checkShowImageGroup();
+
+                    Consentimiento();
+                    Modificacion();
                 });
             });
 
@@ -399,12 +382,13 @@
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
                             $("#" + backTxtId).remove();
-                            $('#results').append(`<h6 id="${backTxtId}">${"Wax " + label}${modeTxt}</h6>`);
+                            $('#results').append(`<h6 id="${backTxtId}">${"Wax Of " + label}${modeTxt}</h6>`);
                             $(sectionId).remove();
                             clearFormDataItem(formDataId);
-                            formData.append(formDataId, "Wax " + label.toUpperCase());
+                            formData.append(formDataId, "Wax Of " + label.toUpperCase());
                             especStatus = 3;
-                            checkShowImageGroup();
+                            Consentimiento();
+                            Modificacion();
                         });
                     })
                 }
@@ -424,8 +408,8 @@
                             formData.append(formDataId, "Lifting " + label.toUpperCase());
                             especStatus = 4;
                             liftingStatus = pIndex;
-                            console.log(pIndex)
-                            checkShowImageGroup();
+                            Consentimiento();
+                            Modificacion();
                         });
                     })
                 }
@@ -443,7 +427,8 @@
                             clearFormDataItem(formDataId);
                             formData.append(formDataId, "Parafina " + label.toUpperCase());
                             especStatus = 5;
-                            checkShowImageGroup();
+                            Consentimiento();
+                            Modificacion();
                         });
                     })
                 }
@@ -458,7 +443,7 @@
                             $(subSelector).empty();
                             let sublists = ['Enzimas', 'Laser'];
 
-                            sublists.forEach(function (list) {
+                            sublists.forEach(function (list, rIndex) {
                                 $(subSelector).append(createCheckbox(toFriendlyID(list), list));
                                 $('#' + toFriendlyID(list)).click(function () {
                                     $(subSelector).empty();
@@ -470,7 +455,9 @@
                                     formData.append(formDataId, "Remoción " + label.toUpperCase() + " " + list.toUpperCase());
 
                                     especStatus = 6;
-                                    checkShowImageGroup();
+                                    remocionStatus = rIndex * 1 + 1;
+                                    Consentimiento();
+                                    Modificacion();
                                 });
                             })
                         });
@@ -480,30 +467,52 @@
 
         }
 
-        const Especialista = function () {
-            if (document.querySelector('#especialista_section')) {
+        const Procedimiento = function () {
+            createProCheckboxList();
+        }
+
+        const Modificacion = function () {
+            if (document.querySelector('#modificacion_section') || formData.get("modify")) {
                 return;
             }
 
-            $("#procedure").append('<div id="especialista_section" class="procedure group-b"><button class="btn btn-primary" id="especialista">ESPECIALISTA</button></div>');            
-            
-            $("#especialista").click(function() {
-                const labels = esList[especStatus];
-                labels.forEach(function (label) {
-                    $('#especialista_section').append(createCheckbox(toFriendlyID(label), label));
-                    $('#' + toFriendlyID(label)).click(function () {
-                        $('#especialista_section').empty();
-                        
-                        // $("#espec_txt").remove();
-                        // $('#results').append(`<h6 id="espec_txt">${label}</h6>`);
-                        $("#especialista_section").remove();
-                        clearFormDataItem("especialista");
-                        formData.append("especialista", label.toUpperCase());
-    
-                        checkShowImageGroup();
+            $("#procedure").append('<div id="modificacion_section" class="procedure group-b"><button class="btn btn-primary" id="modificacion">MODIFICACION</button></div>');
+
+            $("#modificacion").click(function() {
+                if (document.querySelector('#modificacion_sub')) {
+                    return;
+                }
+                
+                $("#modificacion_section").append('<div id="modificacion_sub" class="procedure"></div>');
+
+                let nuevo_proc = createCheckbox('nuevo_proc', 'Nuevo procedimiento');
+                let motivo_del = createCheckbox('motivo_del', 'Motivo del cambio');
+
+                $('#modificacion_sub').append(nuevo_proc);
+                $('#modificacion_sub').append(motivo_del);
+                
+                $("#motivo_del").click(function() {
+                    $('#modificacion_sub').append(createInput("modify_input"));
+
+                    $('#modify_input').change(function () {
+                        let inputVal = $(this).val();
+                        $("#proce_txt").remove();
+                        $("#results").append(`<h6 id="proce_txt">${inputVal} (MOD)</h6>`);
+                        clearFormDataItem("modify");
+                        formData.append("modify", inputVal);
                     });
-                })
+                    
+                    $("#modify_input").blur(function() {
+                        Consentimiento();
+                        $("#modificacion_section").remove();
+                    });
+                });
+                $("#nuevo_proc").click(function() {
+                    $("#modificacion_sub").remove();
+                    createProCheckboxList(true)
+                });
             });
+
         }
 
         const Consentimiento = function() {
@@ -544,7 +553,7 @@
                     if ($(this).prop('checked')) {
                         clearFormDataItem("consentimiento");
                         formData.append("consentimiento", "Documento Firmado");
-                        checkShowImageGroup();
+                        Especialista();
                         $('#consentimiento_section').hide();
                     }
                 });
@@ -556,7 +565,7 @@
                         formData.append("alergia", "No");
     
                         $('#consentimiento_section').hide();
-                        checkShowImageGroup();
+                        Especialista();
                     }
                 });
                 $('#padece_de_alergia').change(function () {
@@ -570,7 +579,7 @@
                                 if (val) {
                                     clearFormDataItem("alergia");
                                     formData.append("alergia", val);
-                                    checkShowImageGroup();
+                                    Especialista();
     
                                     $('#consentimiento_section').hide();
                                 }
@@ -584,47 +593,43 @@
 
         }
 
-        const Modificacion = function () {
-            if (document.querySelector('#modificacion_section')) {
+        const Especialista = function () {
+            if (document.querySelector('#especialista_section')) {
                 return;
             }
 
-            $("#procedure").append('<div id="modificacion_section" class="procedure group-b"><button class="btn btn-primary" id="modificacion">MODIFICACION</button></div>');
-
-            $("#modificacion").click(function() {
-                if (document.querySelector('#modificacion_sub')) {
-                    return;
-                }
-                
-                $("#modificacion_section").append('<div id="modificacion_sub" class="procedure"></div>');
-
-                let nuevo_proc = createCheckbox('nuevo_proc', 'Nuevo procedimiento');
-                let motivo_del = createCheckbox('motivo_del', 'Motivo del cambio');
-
-                $('#modificacion_sub').append(nuevo_proc);
-                $('#modificacion_sub').append(motivo_del);
-                
-                $("#motivo_del").click(function() {
-                    $('#modificacion_sub').append(createInput("modify_input"));
-
-                    $('#modify_input').change(function () {
-                        let inputVal = $(this).val();
-                        $("#results").append(`<h6>${inputVal} (MOD)</h6>`);
-                        clearFormDataItem("modify");
-                        formData.append("modify", inputVal);
-                    });
-                    
-                    $("#modify_input").blur(function() {
+            $("#procedure").append('<div id="especialista_section" class="procedure group-b"><button class="btn btn-primary" id="especialista">ESPECIALISTA</button></div>');            
+            
+            $("#especialista").click(function() {
+                const labels = esList[especStatus];
+                labels.forEach(function (label) {
+                    $('#especialista_section').append(createCheckbox(toFriendlyID(label), label));
+                    $('#' + toFriendlyID(label)).click(function () {
+                        $("#especialista_section").remove();
+                        clearFormDataItem("especialista");
+                        formData.append("especialista", label.toUpperCase());
+    
                         checkShowImageGroup();
-                        $("#modificacion_section").remove();
                     });
-                });
-                $("#nuevo_proc").click(function() {
-                    $("#modificacion_sub").remove();
-                    createProCheckboxList(true)
-                });
+                })
             });
-
+        }
+        
+        const checkShowImageGroup = function() {
+            // IF Especialista is selected Parafina, move to ANOTACIONES GENERALES
+            if (especStatus == 5) {
+                PostService();
+            } else {
+                ImageGroup();
+                if (liftingStatus == 1) {
+                    Tamano()
+                }
+                if (remocionStatus == 1) {
+                    RemocionEnzimas();
+                } else if (remocionStatus == 2) {
+                    RemocionLaser();
+                }
+            }
         }
 
         const ImageGroup = function() {
@@ -633,16 +638,8 @@
             }
 
             $('#procedure').append('<div id="image_group" class="procedure group-image"></div>')
-            
-            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>');
-            if (liftingStatus) {
-                $('#image_group').append('<div class="procedure" id="tamno_section"><button class="btn btn-primary" id="tamno_molde">TAMAÑO DE MOLDE</button></div>');
-            }
             $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>');
-
-            if (especStatus == 5) {
-                $('#image_group').append('<div id="anotaciones_generales_section" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
-            }
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>');
             
             $(['inicial_pic', 'final_pic']).each(function (i, id) {
                 $('#' + id).click(function () {
@@ -661,8 +658,14 @@
                     }
                 });
             });
+        }
 
-            $("#tamno_molde").click(function() {
+        const Tamano = function() {
+            if (document.querySelector('#tamno_section')) {
+                return;
+            }
+            $('#procedure').append('<div class="procedure" id="tamno_section"><button class="btn btn-primary" id="tamano_molde">TAMAÑO DE MOLDE</button></div>');
+            $("#tamano_molde").click(function() {
                 if (document.querySelector('#small')) {
                     return;
                 }
@@ -679,49 +682,225 @@
                     });
                 })
             });
-            $("#anotaciones_generales").click(function() {
-                if (document.querySelector('#anotaciones_generales_section_sub')) return;
-                $('#anotaciones_generales_section').append('<div id="anotaciones_generales_section_sub" class="procedure"></div>');
-                $('#anotaciones_generales_section_sub').append(createInput("anotaciones_generales_input"));
-
-                $('#anotaciones_generales_input').change(function () {
-                    let otra = $(this).val();
-                    clearFormDataItem("anotaciones_generales");
-                    formData.append("anotaciones_generales", otra);
-                });
-                
-                $("#anotaciones_generales_input").blur(function() {
-                    PostService();
-                });
-            });
-
         }
         
-        const PostService = function() {
-            if (document.querySelector('#post_section')) {
+        const RemocionEnzimas = function() {
+            if (document.querySelector('#remocionenzimas_section')) {
                 return;
             }
 
+            $('#procedure').append('<div id="remocionenzimas_section" class="procedure"></div>')
+            
+            $('#remocionenzimas_section').append('<div id="remocionenzimas_section_sub_1" class="procedure"><button class="btn btn-primary" id="enzimas_sesion">SESION</button></div>');
+            $('#remocionenzimas_section').append('<div id="remocionenzimas_section_sub_2" class="procedure"><button class="btn btn-primary" id="enzimas_base">BASE</button></div>');
+            $('#remocionenzimas_section').append('<div id="remocionenzimas_section_sub_3" class="procedure"><button class="btn btn-primary" id="enzimas_tipo">TIPO DE PIEL</button></div>');
+                
+            $("#enzimas_sesion").click(function() {
+                if (document.querySelector('#enzimas_sesion_input')) {
+                    return;
+                }
+                $('#remocionenzimas_section_sub_1').append(createInput('enzimas_sesion_input'));
+                $('#enzimas_sesion_input').change(function () {
+                    clearFormDataItem("enzimas_sesion");
+                    formData.append( "enzimas_sesion", $(this).val() );
+                });
+
+                $("#enzimas_sesion_input").blur(function() {
+                    $('#remocionenzimas_section_sub_1').remove();
+                });
+            });
+            $("#enzimas_base").click(function() {
+                if (document.querySelector('#rosa')) {
+                    return;
+                }
+                const labels = ["Rosa", "Gris", "Morada", "Verde"];
+                labels.forEach(function (label) {
+                    $('#remocionenzimas_section_sub_2').append(createCheckbox(toFriendlyID(label), label));
+                    $('#' + toFriendlyID(label)).click(function () {
+                        $("#remocionenzimas_section_sub_2").remove();
+                        clearFormDataItem("enzimas_base");
+                        formData.append("enzimas_base", label.toUpperCase());
+                    });
+                })
+            });
+
+            $("#enzimas_tipo").click(function() {
+                if (document.querySelector('#enzimas_tipo_1')) {
+                    return;
+                }
+                for (var i = 1; i <= 5; i++) {
+                    const tipoId = "enzimas_tipo_" + i;
+                    let checkboxObj = createCheckbox(tipoId, i);
+                    $("#remocionenzimas_section_sub_3").append( checkboxObj )
+
+                    $("#" + tipoId).change(function() {
+                        if ($(this).prop('checked')) {
+                            $(remocionenzimas_section_sub_3).empty();
+
+                            let subLabels = (i == 5 ? ['1', '2'] : ['2', '3', '4']);
+
+                            subLabels.forEach(function (label) {
+                                const subId = tipoId + ' ' + label;
+                                $("#remocionenzimas_section_sub_3").append(createCheckbox(toFriendlyID(subId), label));
+                                $('#' + toFriendlyID(subId)).click(function () {
+                                    clearFormDataItem("enzimas_tipo");
+                                    formData.append("enzimas_tipo", subId);
+                                    $("#remocionenzimas_section_sub_3").remove();
+                                });
+                            })
+                        }
+                    });
+                }
+            });
+            
+        }
+        
+        const RemocionLaser = function() {
+            if (document.querySelector('#remocionlaser_section')) {
+                return;
+            }
+
+            $('#procedure').append('<div id="remocionlaser_section" class="procedure"></div>')
+            
+            $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_1" class="procedure"><button class="btn btn-primary" id="laser_area">AREA</button></div>');
+            $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_2" class="procedure"><button class="btn btn-primary" id="laser_sesion">SESION</button></div>');
+            $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_3" class="procedure"><button class="btn btn-primary" id="laser_base">BASE</button></div>');
+            $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_4" class="procedure"><button class="btn btn-primary" id="laser_forto">FOTOTIPO DE PIEL</button></div>');
+            $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_5" class="procedure"><button class="btn btn-primary" id="laser_frec">FRECUENCIA</button></div>');
+            $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_6" class="procedure"><button class="btn btn-primary" id="laser_intent">INTENSIDAD</button></div>');
+            $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_7" class="procedure"><button class="btn btn-primary" id="laser_disparos">DISPAROS</button></div>');
+            
+            $("#laser_area").click(function() {
+                if (document.querySelector('#cejas')) {
+                    return;
+                }
+                const labels = ["Cejas", "Brazo izquierdo", "Brazo derecho", "Pierna izquierda", "Pierna derecha", "Hombro izquierdo", 
+                                "Hombro derecho", "Mano izquierda", "Mano derecha", "Espalda", "Pecho", "Cuello", "Pelvis", "Gluteos"];
+                labels.forEach(function (label) {
+                    $('#remocionlaser_section_sub_1').append(createCheckbox(toFriendlyID(label), label));
+                    $('#' + toFriendlyID(label)).click(function () {
+                        $("#remocionlaser_section_sub_1").remove();
+                        clearFormDataItem("laser_area");
+                        formData.append("laser_area", label.toUpperCase());
+                        PostService();
+                    });
+                })
+            });
+            $("#laser_sesion").click(function() {
+                if (document.querySelector('#laser_sesion_1')) {
+                    return;
+                }
+                for (var i = 6; i >= 1; i--) {
+                    const sesionId = "laser_sesion_" + i;
+                    let checkboxObj = createCheckbox(sesionId, i);
+                    $("#remocionlaser_section_sub_2").append( checkboxObj )
+
+                    $('#' + sesionId).click(function () {
+                        clearFormDataItem("laser_sesion");
+                        formData.append("laser_sesion", sesionId);
+                        $("#remocionlaser_section_sub_2").remove();
+                        PostService();
+                    });
+                }
+            });
+            $("#laser_base").click(function() {
+                if (document.querySelector('#negra')) {
+                    return;
+                }
+                const labels = ["Negra", "Gris"];
+                labels.forEach(function (label) {
+                    $('#remocionlaser_section_sub_3').append(createCheckbox(toFriendlyID(label), label));
+                    $('#' + toFriendlyID(label)).click(function () {
+                        $("#remocionlaser_section_sub_3").remove();
+                        clearFormDataItem("laser_base");
+                        formData.append("laser_base", label.toUpperCase());
+                        PostService();
+                    });
+                })
+            });
+            $("#laser_forto").click(function() {
+                if (document.querySelector('#laser_forto_1')) {
+                    return;
+                }
+                for (var i = 1; i <= 4; i--) {
+                    const pielId = "laser_forto_" + i;
+                    let checkboxObj = createCheckbox(pielId, i);
+                    $("#remocionlaser_section_sub_4").append( checkboxObj )
+
+                    $('#' + pielId).click(function () {
+                        clearFormDataItem("laser_forto");
+                        formData.append("laser_forto", pielId);
+                        $("#remocionlaser_section_sub_4").remove();
+                        PostService();
+                    });
+                }
+            });
+            $("#laser_frec").click(function() {
+                if (document.querySelector('#laser_frec_input')) {
+                    return;
+                }
+                $('#remocionlaser_section_sub_5').append(createInput('laser_frec_input'));
+                $('#laser_frec_input').change(function () {
+                    clearFormDataItem("laser_frec");
+                    formData.append( "laser_frec", $(this).val() );
+                });
+
+                $("#laser_frec_input").blur(function() {
+                    $('#remocionlaser_section_sub_5').remove();
+                    PostService();
+                });
+            });
+            $("#laser_intent").click(function() {
+                if (document.querySelector('#laser_intent_input')) {
+                    return;
+                }
+                $('#remocionlaser_section_sub_5').append(createInput('laser_intent_input'));
+                $('#laser_intent_input').change(function () {
+                    clearFormDataItem("laser_intent");
+                    formData.append( "laser_intent", $(this).val() );
+                });
+
+                $("#laser_intent_input").blur(function() {
+                    $('#remocionlaser_section_sub_6').remove();
+                    PostService();
+                });
+            });
+            $("#laser_disparos").click(function() {
+                if (document.querySelector('#laser_disparos_input')) {
+                    return;
+                }
+                $('#remocionlaser_section_sub_5').append(createInput('laser_disparos_input'));
+                $('#laser_disparos_input').change(function () {
+                    clearFormDataItem("laser_disparos");
+                    formData.append( "laser_disparos", $(this).val() );
+                });
+
+                $("#laser_disparos_input").blur(function() {
+                    $('#remocionlaser_section_sub_7').remove();
+                    PostService();
+                });
+            });
+            
+        }
+        
+        const PostService = function( remo = 0 ) {
+            if (document.querySelector('#post_section')) {
+                return;
+            }
+            if ( remo == 1 ) {
+                if ( !formData.get("enzimas_sesion") || !formData.get("enzimas_base") || !formData.get("enzimas_tipo") ) return false;
+            } else if (remo == 2) {
+                if ( !formData.get("laser_area") || !formData.get("laser_sesion") || !formData.get("laser_base") || !formData.get("laser_forto") || 
+                     !formData.get("laser_frec") || !formData.get("laser_intent") || !formData.get("laser_disparos") ) 
+                    return false;
+            }
+
             $('#procedure').append('<div id="post_section" class="procedure group-c"></div>')
-            $('#post_section').append('<div id="post_service_sub_1" class="procedure"><button class="btn btn-primary" id="product_maintain">PRODUCTOS MANTENIMIENTO</button></div>');
+            
+            $('#post_section').append('<div id="post_service_sub_1" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
             $('#post_section').append('<div id="post_service_sub_2" class="procedure"><button class="btn btn-primary" id="product_adicion">PRODUCTOS ADICIONALES</button></div>');
             $('#post_section').append('<div id="post_service_sub_3" class="procedure"><button class="btn btn-primary" id="servicio_furtros">SERVICIO DE FUTUROS</button></div>');
                 
-            $("#product_maintain").click(function() {
-                if (document.querySelector('#product_maintain_input')) {
-                    return;
-                }
-                $('#post_service_sub_1').append(createInput('product_maintain_input'));
-                $('#product_maintain_input').change(function () {
-                    clearFormDataItem("product_maintain");
-                    formData.append( "product_maintain", $(this).val() );
-                    $('#post_service_sub_1').hide();
-                });
-
-                $("#product_maintain_input").blur(function() {
-                    CierreProcedimiento();
-                });
-            });
             $("#product_adicion").click(function() {
                 if (document.querySelector('#product_adicion_input')) {
                     return;
@@ -752,6 +931,18 @@
                     CierreProcedimiento();
                 });
             });
+            $("#anotaciones_generales").click(function() {
+                if (document.querySelector('#anotaciones_generales_section_sub')) return;
+                $('#post_service_sub_1').append('<div id="anotaciones_generales_section_sub" class="procedure"></div>');
+                $('#anotaciones_generales_section_sub').append(createInput("anotaciones_generales_input"));
+
+                $('#anotaciones_generales_input').change(function () {
+                    let otra = $(this).val();
+                    clearFormDataItem("anotaciones_generales");
+                    formData.append("anotaciones_generales", otra);
+                });
+            });
+            
         }
 
         const CierreProcedimiento = function() {
@@ -794,9 +985,6 @@
             
             $('#procedimiento').click(function () {
                 Procedimiento();
-            });
-            $('#especialista').click(function () {
-                Especialista();
             });
             
             $('#nombre').click(function () {
