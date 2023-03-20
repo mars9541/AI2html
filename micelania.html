@@ -175,6 +175,7 @@
         let especStatus = 0;
         let liftingStatus = 0;
         let remocionStatus = 0;
+        let selectedSatus = 0;
         let esList = [
             ["Lisbet", "Dianelys", "Daniela", "Laura", "Susan", "Irianys"],
             ["Lisbet", "Dianelys", "Daniela", "Laura", "Claudia", "Irianys", "Susan"],
@@ -196,8 +197,11 @@
         }
 
         const sendRequest = function () {
-            formData.append("inicio", $("#inicial_pic_file").get(0).files[0]);
-            formData.append("final", $("#final_pic_file").get(0).files[0]);
+            if (selectedSatus != 1) {
+                formData.append("inicio", $("#inicial_pic_file").get(0).files[0]);
+                formData.append("final", $("#final_pic_file").get(0).files[0]);
+            }
+            formData.append("status", selectedSatus);
 
             $.ajax({
                 xhr: function() {
@@ -618,15 +622,19 @@
         const checkShowImageGroup = function() {
             // IF Especialista is selected Parafina, move to ANOTACIONES GENERALES
             if (especStatus == 5) {
+                selectedSatus = 1;
                 PostService();
             } else {
                 ImageGroup();
                 if (liftingStatus == 1) {
+                    selectedSatus = 2;
                     Tamano()
                 }
                 if (remocionStatus == 1) {
+                    selectedSatus = 3;
                     RemocionEnzimas();
                 } else if (remocionStatus == 2) {
+                    selectedSatus = 4;
                     RemocionLaser();
                 }
             }
@@ -813,7 +821,7 @@
                     $('#' + toFriendlyID(label)).click(function () {
                         $("#remocionlaser_section_sub_3").remove();
                         clearFormDataItem("laser_base");
-                        formData.append("laser_base", label.toUpperCase());
+                        formData.append("laser_base", label);
                         PostService();
                     });
                 })
@@ -822,7 +830,7 @@
                 if (document.querySelector('#laser_forto_1')) {
                     return;
                 }
-                for (var i = 1; i <= 4; i--) {
+                for (var i = 1; i <= 4; i++) {
                     const pielId = "laser_forto_" + i;
                     let checkboxObj = createCheckbox(pielId, i);
                     $("#remocionlaser_section_sub_4").append( checkboxObj )
@@ -854,7 +862,7 @@
                 if (document.querySelector('#laser_intent_input')) {
                     return;
                 }
-                $('#remocionlaser_section_sub_5').append(createInput('laser_intent_input'));
+                $('#remocionlaser_section_sub_6').append(createInput('laser_intent_input'));
                 $('#laser_intent_input').change(function () {
                     clearFormDataItem("laser_intent");
                     formData.append( "laser_intent", $(this).val() );
@@ -869,7 +877,7 @@
                 if (document.querySelector('#laser_disparos_input')) {
                     return;
                 }
-                $('#remocionlaser_section_sub_5').append(createInput('laser_disparos_input'));
+                $('#remocionlaser_section_sub_7').append(createInput('laser_disparos_input'));
                 $('#laser_disparos_input').change(function () {
                     clearFormDataItem("laser_disparos");
                     formData.append( "laser_disparos", $(this).val() );
@@ -885,15 +893,15 @@
         
         const PostService = function( remo = 0 ) {
             if (document.querySelector('#post_section')) {
-                return;
+                return false;
             }
-            if ( remo == 1 ) {
-                if ( !formData.get("enzimas_sesion") || !formData.get("enzimas_base") || !formData.get("enzimas_tipo") ) return false;
-            } else if (remo == 2) {
-                if ( !formData.get("laser_area") || !formData.get("laser_sesion") || !formData.get("laser_base") || !formData.get("laser_forto") || 
-                     !formData.get("laser_frec") || !formData.get("laser_intent") || !formData.get("laser_disparos") ) 
-                    return false;
-            }
+            // if ( remo == 1 ) {
+            //     if ( !formData.get("enzimas_sesion") || !formData.get("enzimas_base") || !formData.get("enzimas_tipo") ) return false;
+            // } else if (remo == 2) {
+            //     if ( !formData.get("laser_area") || !formData.get("laser_sesion") || !formData.get("laser_base") || !formData.get("laser_forto") || 
+            //          !formData.get("laser_frec") || !formData.get("laser_intent") || !formData.get("laser_disparos") ) 
+            //         return false;
+            // }
 
             $('#procedure').append('<div id="post_section" class="procedure group-c"></div>')
             
@@ -914,6 +922,7 @@
 
                 $("#product_adicion_input").blur(function() {
                     CierreProcedimiento();
+                    $('#post_service_sub_2').hide();
                 });
             });
             $("#servicio_furtros").click(function() {
@@ -933,14 +942,19 @@
             });
             $("#anotaciones_generales").click(function() {
                 if (document.querySelector('#anotaciones_generales_section_sub')) return;
-                $('#post_service_sub_1').append('<div id="anotaciones_generales_section_sub" class="procedure"></div>');
-                $('#anotaciones_generales_section_sub').append(createInput("anotaciones_generales_input"));
 
+                $('#post_service_sub_1').append(createInput('anotaciones_generales_input'));
                 $('#anotaciones_generales_input').change(function () {
-                    let otra = $(this).val();
                     clearFormDataItem("anotaciones_generales");
-                    formData.append("anotaciones_generales", otra);
+                    formData.append( "anotaciones_generales", $(this).val() );
+                    $('#post_service_sub_1').hide();
                 });
+
+                $("#anotaciones_generales_input").blur(function() {
+                    CierreProcedimiento();
+                    $('#post_service_sub_1').hide();
+                });
+
             });
             
         }
