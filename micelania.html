@@ -334,12 +334,17 @@
 
         const createProCheckboxList = function (flag = false) {
             const backTxtId = "proce_txt";
-            const modeTxt = (flag == 1 ? " (MOD)" : "");
             const subSelector = (flag == 1 ? "#modificacion_sub" : "#procedimiento_sub");
             const subId = (flag == 1 ? "modificacion_sub" : "procedimiento_sub");
             const sectionId = (flag == 1 ? "#modificacion_section" : "#procedimiento_section");
             const formDataId = (flag == 1 ? "modify" : "procedimiento");
-            if (document.querySelector(subSelector)) {
+            let date = new Date();
+            const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
+            const modeTxt = (flag == 1 ? " (MOD)" : "") + " " + time;
+            clearFormDataItem("send_time");
+            formData.append("send_time", time);
+                
+            if (document.querySelector(subSelector) || !formData.get("name")) {
                 return;
             }
 
@@ -369,30 +374,31 @@
                     clearFormDataItem(formDataId);
                     formData.append(formDataId, selectedText.toUpperCase());
                     $("#" + backTxtId).remove();
-                    $('#results').append(`<h6 id="${backTxtId}">${selectedText}${modeTxt}</h6>`);
+                    $('#results').append(`<p id="${backTxtId}">${selectedText}${modeTxt}</p>`);
                     $(sectionId).remove();
 
-                    Consentimiento();
                     Modificacion();
+                    Especialista();
+                    ImageGroup();
                 });
             });
-
             $("#wax").change(function() {
                 if ($(this).prop('checked')) {
                     $(subSelector).empty();
-                    let subLabels = ['Cejas', 'Labio Superior', 'Barbilla'];
+                    let subLabels = ['Wax de Cejas', 'Wax de Labio Superior', 'Wax de Barbilla'];
 
                     subLabels.forEach(function (label) {
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
                             $("#" + backTxtId).remove();
-                            $('#results').append(`<h6 id="${backTxtId}">${"Wax Of " + label}${modeTxt}</h6>`);
+                            $('#results').append(`<p id="${backTxtId}">${"" + label}${modeTxt}</p>`);
                             $(sectionId).remove();
                             clearFormDataItem(formDataId);
                             formData.append(formDataId, "Wax Of " + label.toUpperCase());
                             especStatus = 3;
-                            Consentimiento();
                             Modificacion();
+                            Especialista();
+                            Consentimiento();
                         });
                     })
                 }
@@ -401,19 +407,20 @@
             $("#lifting").change(function() {
                 if ($(this).prop('checked')) {
                     $(subSelector).empty();
-                    let subLabels = ['Cejas', 'Pestañas',];
+                    let subLabels = ['Lifting de Cejas', 'Lifting de Pestañas',];
                     subLabels.forEach(function (label, pIndex) {
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
                             $("#" + backTxtId).remove();
-                            $('#results').append(`<h6 id="${backTxtId}">${"Lifting " + label}${modeTxt}</h6>`);
+                            $('#results').append(`<p id="${backTxtId}">${"" + label}${modeTxt}</p>`);
                             $(sectionId).remove();
                             clearFormDataItem(formDataId);
-                            formData.append(formDataId, "Lifting " + label.toUpperCase());
+                            formData.append(formDataId, " " + label.toUpperCase());
                             especStatus = 4;
                             liftingStatus = pIndex;
-                            Consentimiento();
                             Modificacion();
+                            Especialista();
+                            ImageGroup();
                         });
                     })
                 }
@@ -421,18 +428,19 @@
             $("#parafina").change(function() {
                 if ($(this).prop('checked')) {
                     $(subSelector).empty();
-                    let subLabels = ['Manos', 'Pies'];
+                    let subLabels = ['Parafina De Manos', 'Parafina De Pies'];
                     subLabels.forEach(function (label) {
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
                             $("#" + backTxtId).remove();
-                            $('#results').append(`<h6 id="${backTxtId}">${"Parafina " + label}${modeTxt}</h6>`);
+                            $('#results').append(`<p id="${backTxtId}">${"" + label}${modeTxt}</p>`);
                             $(sectionId).remove();
                             clearFormDataItem(formDataId);
                             formData.append(formDataId, "Parafina " + label.toUpperCase());
                             especStatus = 5;
-                            Consentimiento();
                             Modificacion();
+                            Especialista();
+                            PostService();
                         });
                     })
                 }
@@ -440,35 +448,56 @@
             $("#remocion").change(function() {
                 if ($(this).prop('checked')) {
                     $(subSelector).empty();
-                    let subLabels = ['TattO', 'Cejas'];
-                    subLabels.forEach(function (label) {
-                        $(subSelector).append(createCheckbox(toFriendlyID(label), label));
-                        $('#' + toFriendlyID(label)).click(function () {
-                            $(subSelector).empty();
-                            let sublists = ['Enzimas', 'Laser'];
+                    if ( flag ) {
+                        let sublists = ['Enzimas', 'Laser'];
+                        sublists.forEach(function (list, rIndex) {
+                            $(subSelector).append(createCheckbox(toFriendlyID(list), list));
+                            $('#' + toFriendlyID(list)).click(function () {
+                                $(subSelector).empty();
+                                $("#" + backTxtId).remove();
+                                $('#results').append(`<p id="${backTxtId}">${"" + label} ${list}${modeTxt}</p>`);
+                                $(sectionId).remove();
+                                clearFormDataItem(formDataId);
+                                formData.append(formDataId, "" + label.toUpperCase() + " " + list.toUpperCase());
 
-                            sublists.forEach(function (list, rIndex) {
-                                $(subSelector).append(createCheckbox(toFriendlyID(list), list));
-                                $('#' + toFriendlyID(list)).click(function () {
-                                    $(subSelector).empty();
-                                    $("#" + backTxtId).remove();
-                                    $('#results').append(`<h6 id="${backTxtId}">${"Remoción " + label} ${list}${modeTxt}</h6>`);
-                                    // $('#results').append(`<h6 id="proce_txt">${"Remoción " + label + " " + list}</h6>`);
-                                    $(sectionId).remove();
-                                    clearFormDataItem(formDataId);
-                                    formData.append(formDataId, "Remoción " + label.toUpperCase() + " " + list.toUpperCase());
-
-                                    especStatus = 6;
-                                    remocionStatus = rIndex * 1 + 1;
-                                    Consentimiento();
-                                    Modificacion();
-                                });
-                            })
-                        });
-                    })
+                                especStatus = 6;
+                                remocionStatus = rIndex * 1 + 1;
+                                Modificacion();
+                                Especialista();
+                                Consentimiento();
+                            });
+                        })
+                    } else {
+                        let subLabels = ['Remocion de Tattoo', 'Remocion de Cejas'];
+                        subLabels.forEach(function (label) {
+                            $(subSelector).append(createCheckbox(toFriendlyID(label), label));
+                            $('#' + toFriendlyID(label)).click(function () {
+                                $(subSelector).empty();
+                                let sublists = ['Enzimas', 'Laser'];
+    
+                                sublists.forEach(function (list, rIndex) {
+                                    $(subSelector).append(createCheckbox(toFriendlyID(list), list));
+                                    $('#' + toFriendlyID(list)).click(function () {
+                                        $(subSelector).empty();
+                                        $("#" + backTxtId).remove();
+                                        $('#results').append(`<p id="${backTxtId}">${"" + label} ${list}${modeTxt}</p>`);
+                                        // $('#results').append(`<h6 id="proce_txt">${"Remoción " + label + " " + list}</h6>`);
+                                        $(sectionId).remove();
+                                        clearFormDataItem(formDataId);
+                                        formData.append(formDataId, "" + label.toUpperCase() + " " + list.toUpperCase());
+    
+                                        especStatus = 6;
+                                        remocionStatus = rIndex * 1 + 1;
+                                        Modificacion();
+                                        Especialista();
+                                        Consentimiento();
+                                    });
+                                })
+                            });
+                        })
+                    }
                 }
             });
-
         }
 
         const Procedimiento = function () {
@@ -526,11 +555,10 @@
 
             $("#procedure").append('<div id="consentimiento_section" class="procedure group-b"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>');
             
-            if (document.querySelector('#documento_firmado')) {
-                return false;
-            }
-
             $("#consentimiento").click(function() {
+                if (document.querySelector('#documento_firmado')) {
+                    return false;
+                }
                 let documento_firmado = $(`<div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="documento_firmado">
                     <label class="form-check-label" for="documento_firmado">
@@ -557,7 +585,6 @@
                     if ($(this).prop('checked')) {
                         clearFormDataItem("consentimiento");
                         formData.append("consentimiento", "Documento Firmado");
-                        Especialista();
                         $('#consentimiento_section').hide();
                     }
                 });
@@ -569,7 +596,6 @@
                         formData.append("alergia", "No");
     
                         $('#consentimiento_section').hide();
-                        Especialista();
                     }
                 });
                 $('#padece_de_alergia').change(function () {
@@ -583,7 +609,6 @@
                                 if (val) {
                                     clearFormDataItem("alergia");
                                     formData.append("alergia", val);
-                                    Especialista();
     
                                     $('#consentimiento_section').hide();
                                 }
@@ -605,6 +630,8 @@
             $("#procedure").append('<div id="especialista_section" class="procedure group-b"><button class="btn btn-primary" id="especialista">ESPECIALISTA</button></div>');            
             
             $("#especialista").click(function() {
+                if (!formData.get("modify")) $("#modificacion_section").hide();
+
                 const labels = esList[especStatus];
                 labels.forEach(function (label) {
                     $('#especialista_section').append(createCheckbox(toFriendlyID(label), label));
@@ -629,13 +656,14 @@
                 if (liftingStatus == 1) {
                     selectedSatus = 2;
                     Tamano()
-                }
-                if (remocionStatus == 1) {
-                    selectedSatus = 3;
-                    RemocionEnzimas();
-                } else if (remocionStatus == 2) {
-                    selectedSatus = 4;
-                    RemocionLaser();
+                } else {
+                    if (remocionStatus == 1) {
+                        selectedSatus = 3;
+                        RemocionEnzimas();
+                    } else if (remocionStatus == 2) {
+                        selectedSatus = 4;
+                        RemocionLaser();
+                    }
                 }
             }
         }
@@ -646,8 +674,8 @@
             }
 
             $('#procedure').append('<div id="image_group" class="procedure group-image"></div>')
-            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>');
             $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>');
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>');
             
             $(['inicial_pic', 'final_pic']).each(function (i, id) {
                 $('#' + id).click(function () {
@@ -745,7 +773,7 @@
                         if ($(this).prop('checked')) {
                             $(remocionenzimas_section_sub_3).empty();
 
-                            let subLabels = (i == 5 ? ['1', '2'] : ['2', '3', '4']);
+                            let subLabels = (i == 5 ? ['1 pasadas', '2 pasadas'] : ['2 pasadas', '3 pasadas', '4 pasadas']);
 
                             subLabels.forEach(function (label) {
                                 const subId = tipoId + ' ' + label;
@@ -968,10 +996,6 @@
             $('#cierre_procedimiento').append('<div id="" class="procedure"><button class="btn btn-primary" id="enviar">ENVIAR</button></div>');
             
             $('#enviar').click(function () {
-                var date = new Date();
-                var sendDate = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-                clearFormDataItem("send_time");
-                formData.append("send_time", sendDate);
                 sendRequest();
             });
         }
