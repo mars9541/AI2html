@@ -1,0 +1,920 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MICROBLADING</title>
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            padding: 24px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            background-color: white;
+            color: rgb(184, 142, 140);
+            position: relative;
+        }
+
+        .base_page {
+            background-image: url('./assets/img/bottom-right.svg'), url('./assets/img/top-right.svg'), url('./assets/img/bottom-left.svg'), url('./assets/img/top-left.svg'), url('./assets/img/horizontals.png'), url('./assets/img/verticals.png'), url('./assets/img/horizontals.png'), url('./assets/img/verticals.png');
+            background-position: bottom right, top right, bottom left, top left, top, left, bottom, right;
+            background-size: 140px, 140px, 140px, 140px, 100px 2.8px, 2.8px, 100px 2.8px, 2.6px;
+            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat-x, repeat-y, repeat-x, repeat-y;
+            max-width: 380px;
+        }
+
+        .base_title {
+            font-size: 40px;
+            font-weight: 100;
+        }
+
+        .main_open {
+            padding-top: 72px;
+            padding-bottom: 72px;
+            height: fit-content !important;
+            min-height: 100%;
+            position: relative;
+        }
+
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:active,
+        .btn-primary:focus,
+        .btn-primary:focus-within {
+            background-color: rgb(184, 142, 140);
+            color: #FFFFFF;
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        .forms {
+            width: 100%;
+            margin: 0 auto;
+            max-width: 330px;
+        }
+
+        .forms .btn {
+            text-align: left;
+        }
+
+        .procedure {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .procedure label {
+            color: #2C2E35;
+        }
+
+        #results {
+            width: 100%;
+            max-width: 330px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            align-items: start;
+            font-weight: 400;
+            gap: 4px;
+            color: rgb(184, 142, 140);
+        }
+
+        #results h6 {
+            font-size: 20px;
+        }
+
+        #results p {
+            color: rgb(184, 142, 140);
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .form-check .form-check-input[type="checkbox"]:checked {
+            background-color: #DFC6C5;
+            border-color: #DFC6C5;
+        }
+
+        .label_file {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+        }
+
+        .label_file::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            align-items: center;
+            display: block;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232C2E35' class='bi bi-camera' viewBox='0 0 16 16'%3E%3Cpath d='M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z'/%3E%3Cpath d='M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z'/%3E%3C/svg%3E");
+        }
+
+        #back_button {
+            position: absolute;
+            margin-top: auto;
+            margin-right: auto;
+            bottom: 5%;
+        }
+
+        footer {
+            left: 0;
+            bottom: 2px;
+        }
+
+        .upload-status {
+            font-size: 30px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container base_page">
+        <div id="main_container" class="d-flex flex-column h-100 gap-3 justify-content-center align-items-center">
+            <a id="logo">
+                <img src="./assets/img/logo.png" width="300" />
+            </a>
+            <h1 class="base_title">
+                Microblading
+            </h1>
+            <div id="results">
+
+            </div>
+            <div class="flex-column gap-2 forms" id="procedure" style="display: none;">
+                <div id="name_section" class="procedure">
+                    <button class="btn btn-primary" id="nombre">NOMBRE</button>
+                </div>
+                <div id="procedimiento_section" class="procedure group-b">
+                    <button class="btn btn-primary" id="procedimiento">PROCEDIMIENTO</button>
+                </div>
+            </div>
+            <div class="mt-5 d-block w-100"></div>
+            <button id="back_button" style="display: none;" class="btn btn-primary">Back</button>
+        </div>
+    </div>
+    <footer class="position-absolute bottom-0 text-center w-100">
+        <p class="mb-0 w-100">DERMABLESS ALL RIGHT RESERVED</p>
+    </footer>
+    <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
+    <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+    <script src="./js/heic2any.js"></script>
+    <script>
+        const states = [];
+        let pigStatus = 0;
+        var formData = new FormData();
+        
+        const padStart = function (text, length = 2, replacedString = '0') {
+            let newText = text + '';
+            while (newText.length < length) {
+                newText = replacedString + newText;
+            }
+            return newText;
+        }
+
+        const sendRequest = function () {
+            formData.append("inicial_1", $("#inicial_pic_1_file").get(0).files[0]);
+            formData.append("inicial_2", $("#inicial_pic_2_file").get(0).files[0]);
+            formData.append("inicial_3", $("#inicial_pic_3_file").get(0).files[0]);
+            formData.append("inicial_4", $("#inicial_pic_4_file").get(0).files[0]);
+            formData.append("design_1", $("#design_pic_1_file").get(0).files[0]);
+            formData.append("design_2", $("#design_pic_2_file").get(0).files[0]);
+            formData.append("final_1", $("#final_pic_1_file").get(0).files[0]);
+            formData.append("final_2", $("#final_pic_2_file").get(0).files[0]);
+            formData.append("final_3", $("#final_pic_3_file").get(0).files[0]);
+            formData.append("final_4", $("#final_pic_4_file").get(0).files[0]);
+
+            $.ajax({
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = parseInt(percentComplete * 100);
+
+                            $(".upload-status").text("Uploading...(" + percentComplete + "%)");
+                        }
+                    }, false);
+
+                    return xhr;
+                },
+                url: 'https://dermaforms.prodev.app/generate/microblading',
+                // url: 'http://localhost:8082/generate/microblading',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                type: 'POST',
+                dataType: "json",
+                success: function (res) {
+                    alert(res.message)
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        const start = function () {
+            $('#logo').hide();
+            $('#main_container').addClass('main_open');
+            $('#main_container').removeClass('justify-content-center');
+            $('#procedure').attr('style', 'display: flex;');
+        }
+
+        const capitalLetter = function (str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        const createCheckbox = function (id, label, container = false) {
+            return $(`<div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="${id}">
+                    <label class="form-check-label" for="${id}">${label}</label></div>
+                    
+        ` + (container ? `<div id="${id}_container"></div>` : ''));
+        }
+
+        const createInput = function (id, placeholder = "") {
+            return $(`<input class="form-control" placeholder="${placeholder}" name="${id}" id="${id}">`);
+        }
+
+        const createFileInput = function (id) {
+            return $(`<label id="${id}_label" class="label_file">Accion de tomar<input id="${id}" type="file" style="visibility: hidden; position: absolute" accept="image/png, image/gif, image/jpeg"></label>`);
+        }
+
+        const convertHeicToJpg = function(input) {
+            var oldFile = $(input).val().split('\\').pop();
+            var oldFileName = oldFile.substr(0, oldFile.lastIndexOf('.')) || oldFile;
+
+            var fileName = $(input).val();
+            var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+            if(fileNameExt == "heic") {
+                var blob = $(input)[0].files[0]; //ev.target.files[0];
+                heic2any({
+                    blob: blob,
+                    toType: "image/png",
+                }).then(function (resultBlob) {
+                    var url = URL.createObjectURL(resultBlob);
+                    $(input).parent().find(".upload-file").css("background-image", "url("+url+")"); //previewing the uploaded picture
+                    let fileInputElement = $(input)[0];
+                    let container = new DataTransfer();
+                    let file = new File([resultBlob], oldFileName + ".png",{type:"image/png", lastModified:new Date().getTime()});
+                    container.items.add(file);
+
+                    fileInputElement.files = container.files;
+                })
+                .catch(function (x) {
+                    console.log(x.code);
+                    console.log(x.message);
+                });
+            }
+        }
+
+        let toFriendlyID = function (label) {
+            label = label.replace("&", " ");
+            return label.replace(new RegExp('( )', 'g'), '_').replace(new RegExp('/', 'g'), '_').toLowerCase();
+        }
+
+        const clearFormDataItem = function(key) {
+            formData.delete(key);
+        }
+
+        const Nombre = function() {
+            if (!document.querySelector('#full_name')) {
+                $('#name_section').append('<input id="full_name" name="full_name" type="text" class="form-control">')
+                $('#full_name').change(function () {
+                    let val = $(this).val();
+
+                    if (val) {
+                        const name = val.split(" ");
+                        let nombre = "";
+                        for (i in name) {
+                            nombre += capitalLetter(name[i]) + " ";
+                        }
+                        let date = new Date();
+                        const generate_date = `${padStart(date.getMonth() * 1 + 1)}/${padStart(date.getDate())}/${date.getFullYear()}`;
+                        const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
+                        
+                        clearFormDataItem("name");
+                        formData.append("name", nombre);
+
+                        clearFormDataItem("date");
+                        formData.append("date", generate_date);
+                        
+                        $('#results').append(`<h6>${nombre}</h6>`);
+                        $('#results').append(`<p>${generate_date}</p>`);
+
+                        $('#name_section').hide();
+                    }
+                });
+            }
+        }
+
+        const createProCheckboxList = function (flag = false) {
+            let date = new Date();
+            const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
+            clearFormDataItem("time");
+            formData.append("time", time);
+            const modeTxt = (flag == 1 ? " (MOD)" : "") + " " + time;
+            const backTxtId = "proce_txt";
+            const subSelector = (flag == 1 ? "#modificacion_sub" : "#procedimiento_sub");
+            const subId = (flag == 1 ? "modificacion_sub" : "procedimiento_sub");
+            const sectionId = (flag == 1 ? "#modificacion_section" : "#procedimiento_section");
+            const formDataId = (flag == 1 ? "modify" : "procedimiento");
+            
+            if (document.querySelector(subSelector)) {
+                return;
+            }
+
+            $(sectionId).append('<div id="' + subId + '" class="procedure"></div>');
+
+            const labels = ["Microblading & Shading", "Microblading", "Hibridas", "Ombré", "Neutralización", "Retoque Microblading",
+                            "Retoque Hibridas", "Retoque Ombré", "Retoque Neutralización", "Valoración Cejas"];
+            
+            labels.forEach(function(label) {
+                $(subSelector).append(createCheckbox(toFriendlyID(label), label));
+                $('#' + toFriendlyID(label)).click(function () {
+                    $("#" + backTxtId).remove();
+                    $('#results').append(`<p id="${backTxtId}">${label}${modeTxt}</p>`);
+                    $(sectionId).remove();
+                    clearFormDataItem(formDataId);
+                    formData.append(formDataId, label.toUpperCase());
+                    Modificacion();
+                    Tiempo();
+                });
+            });
+
+        }
+
+        const Procedimiento = function () {
+            if (!formData.get("name")) return false;
+            createProCheckboxList();
+        }
+
+        const Modificacion = function () {
+            if (document.querySelector('#modificacion_section') || formData.get("modify")) {
+                return;
+            }
+
+            $("#procedure").append('<div id="modificacion_section" class="procedure group-b"><button class="btn btn-primary" id="modificacion">MODIFICACION</button></div>');
+
+            $("#modificacion").click(function() {
+                if (document.querySelector('#modificacion_sub')) {
+                    return;
+                }
+                
+                $("#modificacion_section").append('<div id="modificacion_sub" class="procedure"></div>');
+
+                let nuevo_proc = createCheckbox('nuevo_proc', 'Nuevo procedimiento');
+                let motivo_del = createCheckbox('motivo_del', 'Motivo del cambio');
+
+                $('#modificacion_sub').append(nuevo_proc);
+                $('#modificacion_sub').append(motivo_del);
+                
+                $("#motivo_del").click(function() {
+                    $('#modificacion_sub').append(createInput("modify_input"));
+
+                    $('#modify_input').change(function () {
+                        let inputVal = $(this).val();
+                        $("#proce_txt").remove();
+                        $("#results").append(`<h6 id="proce_txt">${inputVal} (MOD)</h6>`);
+                        clearFormDataItem("modify");
+                        formData.append("modify", inputVal);
+                    });
+                    
+                    $("#modify_input").blur(function() {
+                        Consentimiento();
+                        $("#modificacion_section").remove();
+                    });
+                });
+                $("#nuevo_proc").click(function() {
+                    $("#modificacion_sub").remove();
+                    createProCheckboxList(true)
+                });
+            });
+
+        }
+
+        const Tiempo = function() {
+            if (document.querySelector("#tiempo_section")) return false;
+
+            $("#procedure").append('<div id="tiempo_section" class="procedure"><button class="btn btn-primary" id="tiempo_btn">TIEMPO</button></div>');
+            
+            $("#tiempo_btn").click(function() {
+                if (document.querySelector('#hasta_12_meses')) {
+                    return false;
+                }
+                ["Hasta 12 Meses", "12 - 18 Meses", "18 - 24 Meses"].forEach(function(label) {
+                    const itemId = toFriendlyID(label);
+                    $("#tiempo_section").append( createCheckbox( itemId, label ) );
+
+                    $("#" + itemId).click(function() {
+                        clearFormDataItem("tiempo");
+                        formData.append("tiempo", label);
+
+                        $("#tiempo_section").remove();
+
+                        ColorAnterior();
+                    });
+                });
+            });
+        }
+
+        const ColorAnterior = function() {
+            if (document.querySelector('#color_section')) {
+                return;
+            }
+
+            $("#procedure").append('<div id="color_section" class="procedure"><button class="btn btn-primary" id="color_anterior">COLOR ANTERIOR</button></div>');
+            $("#color_anterior").click(function() {
+                if (document.querySelector("#color_anterior_input")) return false;
+
+                $("#color_section").append( createInput("color_anterior_input") );
+
+                $("#color_anterior_input").blur(function() {
+                    clearFormDataItem("color_angerior");
+                    formData.append( "color_angerior", $(this).val() );
+                    $("#color_section").remove();
+
+                    Consentimiento();
+                });
+            });
+        }
+
+        const Consentimiento = function() {
+            if (document.querySelector('#consentimiento_section')) {
+                return false;
+            }
+
+            $("#procedure").append('<div id="consentimiento_section" class="procedure"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>');
+            
+            $("#consentimiento").click(function() {
+                if (document.querySelector('#documento_firmado')) {
+                    return false;
+                }
+                ["Documento Firmado", "Condiciones Previas"].forEach(function(label, index) {
+                    const itemId = toFriendlyID(label);
+                    $("#consentimiento_section").append( createCheckbox(itemId, label) );
+                });
+                    
+                $('#documento_firmado').change(function () {
+                    if ($(this).prop('checked')) {
+                        clearFormDataItem("consentimiento");
+                        formData.append("consentimiento", "Documento Firmado");
+                        $('#consentimiento_section').hide();
+
+                        InicialImageGroup();
+                        Pigmentos();
+                        Proporcion();
+                    }
+                });
+
+                $('#condiciones_previas').change(function () {
+                    if ($(this).prop('checked')) {
+                        $("#consentimiento_section").append( createInput("condiciones_previas_input") );
+
+                        $("#condiciones_previas_input").blur(function() {
+                            clearFormDataItem("consentimiento");
+                            formData.append("consentimiento", $(this).val());
+    
+                            $('#consentimiento_section').hide();
+                            InicialImageGroup();
+                            Pigmentos();
+                            Proporcion();
+                        });
+                    }
+                });
+                /*
+                $('#padece_de_alergia').change(function () {
+                    if ($(this).prop('checked')) {
+                        clearFormDataItem("consentimiento");
+                        formData.append("consentimiento", "");
+                        if (!document.querySelector('alergia')) {
+                            $('#alergia_container').append(`<input id="alergia" name="alergia" type="text" class="form-control">`);
+                            $('#alergia').change(function () {
+                                let val = $(this).val();
+                                if (val) {
+                                    clearFormDataItem("alergia");
+                                    formData.append("alergia", val);
+                                    Especialista();
+    
+                                    $('#consentimiento_section').hide();
+                                }
+                            });
+                        }
+                    } else {
+                        $('#alergia').remove();
+                    }
+                });
+                */
+            });
+
+        }
+
+        const InicialImageGroup = function() {
+            if (document.querySelector('#image_group')) {
+                return;
+            }
+            $("#modificacion_section").hide();
+
+            $('#procedure').append('<div id="image_group" class="procedure group-image"></div>')
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic_1">INICIAL PIC 1</button></div>');
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic_2">INICIAL PIC 2</button></div>');
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic_3">INICIAL PIC 3</button></div>');
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic_4">INICIAL PIC 4</button></div>');
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="design_pic_1">DESIGN PIC 1</button></div>');
+            $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="design_pic_2">DESIGN PIC 2</button></div>');
+            
+            $(['inicial_pic_1', 'inicial_pic_2', 'inicial_pic_3', 'inicial_pic_4', 'design_pic_1', 'design_pic_2']).each(function (i, id) {
+                $('#' + id).click(function () {
+                    if (!document.getElementById(id + '_file')) {
+                        $('#' + id).parent().append(createFileInput(id + '_file'));
+                        $('#' + id + '_file').change(function (e) {
+                            convertHeicToJpg(this);
+                            $('#' + id).parent().hide();
+
+                            if ( $("#inicial_pic_1_file").val() || $("#inicial_pic_2_file").val() || $("#inicial_pic_3_file").val() || $("#inicial_pic_4_file").val() || 
+                                 $("#design_pic_1_file").val() || $("#design_pic_2_file").val() ) {
+                                Pigmentos();
+                            }
+                        });
+
+                        $('#' + id + '_file').click()
+                    }
+                });
+            });
+        }
+
+        const Pigmentos = function () {
+            if (document.querySelector("#pigmentos_section")) return false;
+
+            $('#procedure').append('<div id="pigmentos_section" class="procedure"><button class="btn btn-primary" id="pigmentos_btn">PIGMENTOS</button></div>');
+
+            $("#pigmentos_btn").click(function() {
+                if (document.querySelector("#phibrow")) return false;
+                ["Phibrow", "Brow Daddy"].forEach(function(label, index) {
+                    pigStatus = index;
+                    const itemId = toFriendlyID(label);
+                    $("#pigmentos_section").append( createCheckbox(itemId, label) );
+    
+                    $("#" + itemId).click(function() {
+                        $("#pigmentos_section").empty();
+    
+                        ["Color", "Color A", "Color B"].forEach(function(subLabel) {
+                            const subItemId = toFriendlyID(subLabel);
+                            $("#pigmentos_section").append( createCheckbox(subItemId, subLabel) );
+    
+                            $("#" + subItemId).click(function() {
+                                let colors = [];
+                                $("#pigmentos_section").empty();
+                                if (index == 0) {
+                                    colors = ["Brown 1", "Brown 2", "Brown 3", "Arabian", "Golden Brown", "Fox", "Red", "Yellow"];
+                                } else if (index == 1) {
+                                    colors = ["Troffle Dream", "Schokalade", "Brouge", "Dark Teddy", "Honey Magic", "Bronzite", 
+                                    "Golden Goddess", "Tokyo Black", "Ice Caramel", "Berry Blonde", "Nova", "Aurora", "Solare"];
+                                }
+    
+                                colors.forEach(function(color) {
+                                    const colorItemId = toFriendlyID(color)
+                                    $("#pigmentos_section").append( createCheckbox(colorItemId, color) );
+    
+                                    $("#" + colorItemId).click(function() {
+                                        clearFormDataItem("pigmentos");
+                                        formData.append("pigmentos", label + "/" + subLabel + "/" + color);
+    
+                                        $("#pigmentos_section").remove();
+                                        Proporcion();
+                                    });
+                                })
+                            });
+                        })
+                    });
+                });
+            });
+        }
+
+        const Proporcion = function() {
+            if (document.querySelector('#proporcion_section') || !formData.get("pigmentos")) {
+                return false;
+            }
+
+            $('#procedure').append('<div id="proporcion_section" class="procedure"><button class="btn btn-primary" id="proporcion_btn">PIGMENTOS</button></div>');
+            
+            $("#proporcion_btn").click(function() {
+                let items = [];
+                if (pigStatus == 1) {
+                    items = ["1 Gotas", "2 Gotas", "3 Gotas", "4 Gotas"];
+                } else {
+                    items = ["Porciento 50/50", "Porciento 60/40", "Porciento 40/60"];
+                }
+                items.forEach(function(item) {
+                    const itemId = toFriendlyID(item);
+                    $("#proporcion_section").append( createCheckbox(itemId, item) );
+    
+                    $("#" + itemId).click(function() {
+                        clearFormDataItem("proporcion");
+                        formData.append("proporcion", item);
+    
+                        $("#proporcion_section").remove();
+                        Sangrado();
+                        Shading();
+                        Mascara();
+                    });
+                });
+            });
+        }
+        
+        const Sangrado = function() {
+            if (document.querySelector('#sangrado_section')) {
+                return false;
+            }
+
+            $('#procedure').append('<div id="sangrado_section" class="procedure"><button class="btn btn-primary" id="sangrado_btn">SANGRADO</button></div>');
+            $("#sangrado_btn").click(function() {
+                ["Gotas", "Porciento"].forEach(function(label, index) {
+                    const itemId = toFriendlyID(label);
+                    $("#sangrado_section").append( createCheckbox(itemId, label) );
+    
+                    $("#" + itemId).click(function() {
+                        clearFormDataItem("sangrado");
+                        formData.append("sangrado", label);
+    
+                        $("#sangrado_section").remove();
+                    });
+                });
+            });
+        }
+ 
+        const Shading = function() {
+            if (document.querySelector('#shading_section')) {
+                return false;
+            }
+
+            $('#procedure').append('<div id="shading_section" class="procedure"><button class="btn btn-primary" id="shading_btn">SHADING</button></div>');
+            $("#shading_btn").click(function() {
+                if ( document.querySelector("#incluido") ) return false;
+                $("#shading_section").append( createCheckbox("incluido", "Incluído") );
+                $("#shading_section").append( createCheckbox("no_incluido", "No Incluído") );
+
+                $("#incluido").click(function() {
+                    $("#shading_section").empty();
+
+                    ["Fluffy", "Manual", "A máquina"].forEach(function(label) {
+                        const itemId = toFriendlyID(label);
+                        $("#shading_section").append( createCheckbox(itemId, label) );
+
+                        $("#" + itemId).click(function() {
+                            clearFormDataItem("shading");
+                            formData.append("shading", label);
+
+                            $("#shading_section").remove();
+                        });
+                    });
+                });
+
+                $("#no_incluido").click( function() {
+                    if (document.querySelector("#no_incluido_input")) return false;
+                    $("#shading_section").append( createInput("no_incluido_input") );
+
+                    $("#no_incluido_input").blur(function() {
+                        clearFormDataItem("shading");
+                        formData.append("shading", $(this).val())
+                        $("#shading_section").remove();
+                    });
+                } );
+            });
+        }
+
+        const Mascara = function() {
+            if (document.querySelector("#mascar_section")) return false;
+            
+            $('#procedure').append('<div id="mascar_section" class="procedure"><button class="btn btn-primary" id="mascar_btn">MASCARA FINAL</button></div>')
+            
+            $('#mascar_btn').click(function () {
+                if (document.querySelector("#mascar_input")) return false;
+                $("#mascar_section").append( createInput("mascar_input") );
+
+                $("#mascar_input").blur(function() {
+                    clearFormDataItem("mascar");
+                    formData.append("mascar", $(this).val());
+                    $("#mascar_section").remove();
+                    FinalImageGroup();
+                });
+                
+            });
+        }
+
+        const FinalImageGroup = function() {
+            if (document.querySelector('#final_images')) {
+                return;
+            }
+
+            $('#procedure').append('<div id="final_images" class="procedure group-image"></div>')
+            $('#final_images').append('<div class="procedure"><button class="btn btn-primary" id="final_pic_1">FINAL PIC 1</button></div>');
+            $('#final_images').append('<div class="procedure"><button class="btn btn-primary" id="final_pic_2">Final PIC 2</button></div>');
+            $('#final_images').append('<div class="procedure"><button class="btn btn-primary" id="final_pic_3">Final PIC 3</button></div>');
+            $('#final_images').append('<div class="procedure"><button class="btn btn-primary" id="final_pic_4">Final PIC 4</button></div>');
+            
+            $(['final_pic_1', 'final_pic_2', 'final_pic_3', 'final_pic_4']).each(function (i, id) {
+                $('#' + id).click(function () {
+                    if (!document.getElementById(id + '_file')) {
+                        $('#' + id).parent().append(createFileInput(id + '_file'));
+                        $('#' + id + '_file').change(function (e) {
+                            convertHeicToJpg(this);
+                            $('#' + id).parent().hide();
+
+                            if ( $("#final_pic_1_file").val() || $("#final_pic_2_file").val() || $("#final_pic_3_file").val() || $("#final_pic_4_file").val() ) {
+                                PostService();
+                            }
+                        });
+
+                        $('#' + id + '_file').click()
+                    }
+                });
+            });
+        }
+
+        const PostService = function() {
+            if (document.querySelector('#post_section')) {
+                return false;
+            }
+
+            $('#procedure').append('<div id="post_section" class="procedure group-c"></div>')
+            
+            $('#post_section').append('<div id="post_service_sub_1" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
+            $('#post_section').append('<div id="post_service_sub_4" class="procedure"><button class="btn btn-primary" id="prodcutos_mtto">PRODUCTOS MTTO</button></div>');
+            $('#post_section').append('<div id="post_service_sub_2" class="procedure"><button class="btn btn-primary" id="product_adicion">PRODUCTOS ADICIONALES</button></div>');
+            $('#post_section').append('<div id="post_service_sub_3" class="procedure"><button class="btn btn-primary" id="servicio_furtros">SERVICIO DE FUTUROS</button></div>');
+                
+            $("#product_adicion").click(function() {
+                if (document.querySelector('#product_adicion_input')) {
+                    return;
+                }
+                $('#post_service_sub_2').append(createInput('product_adicion_input'));
+                $('#product_adicion_input').change(function () {
+                    clearFormDataItem("product_adicion");
+                    formData.append( "product_adicion", $(this).val() );
+                    $('#post_service_sub_2').hide();
+                });
+
+                $("#product_adicion_input").blur(function() {
+                    CierreProcedimiento();
+                    $('#post_service_sub_2').hide();
+                });
+            });
+            $("#prodcutos_mtto").click(function() {
+                ["No llevó productos mtto", "Eyebrows Essential Kit", "Skin Candy", "Green Soap"].forEach(function(item) {
+                    const itemId = toFriendlyID(item);
+                    $("#post_service_sub_4").append( createCheckbox(itemId, item) );
+
+                    $("#" + itemId).click(function() {
+                        clearFormDataItem("productos_mtto");
+                        formData.append("productos_mtto", item);
+
+                        $("#post_service_sub_4").remove();
+                    });
+                });
+            });
+            $("#servicio_furtros").click(function() {
+                if (document.querySelector('#servicio_furtros_input')) {
+                    return;
+                }
+                $('#post_service_sub_3').append(createInput('servicio_furtros_input'));
+                $('#servicio_furtros_input').change(function () {
+                    clearFormDataItem("servicio_furtros");
+                    formData.append( "servicio_furtros", $(this).val() );
+                    $('#post_service_sub_3').hide();
+                });
+
+                $("#servicio_furtros_input").blur(function() {
+                    CierreProcedimiento();
+                });
+            });
+            $("#anotaciones_generales").click(function() {
+                if (document.querySelector('#anotaciones_generales_section_sub')) return;
+
+                $('#post_service_sub_1').append(createInput('anotaciones_generales_input'));
+                $('#anotaciones_generales_input').change(function () {
+                    clearFormDataItem("anotaciones_generales");
+                    formData.append( "anotaciones_generales", $(this).val() );
+                    $('#post_service_sub_1').hide();
+                });
+
+                $("#anotaciones_generales_input").blur(function() {
+                    CierreProcedimiento();
+                    $('#post_service_sub_1').hide();
+                });
+
+            });
+            
+        }
+
+        const CierreProcedimiento = function() {
+            if (document.querySelector('#cierre_procedimiento')) {
+                return;
+            }
+            
+            $('#procedure').append('<div id="cierre_procedimiento" class="procedure"></div>')
+            $('#cierre_procedimiento').append('<div id="" class="procedure"><button class="btn btn-primary" id="enviar">ENVIAR</button></div>');
+            
+            $('#enviar').click(function () {
+                var date = new Date();
+                var sendDate = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+                clearFormDataItem("send_time");
+                formData.append("send_time", sendDate);
+                sendRequest();
+            });
+        }
+
+        $(document).ready(function () {
+            $('#back_button').click(function () {
+                if (states.length) {
+                    let func = states.pop();
+                    func();
+                }
+            });
+
+            $('#main_container').click(function () {
+                start();
+            });
+
+            const name = localStorage.getItem("name");
+            const date = localStorage.getItem("date");
+            
+            if (name && date) {
+                start();
+                $('#results').append(`<h6>${name}</h6>`);
+                $('#results').append(`<p>${date}</p>`);
+            }
+            
+            $('#procedimiento').click(function () {
+                Procedimiento();
+            });
+            
+            $('#nombre').click(function () {
+                Nombre();
+            });
+
+            $.LoadingOverlaySetup({
+                background              : "rgba(255, 255, 255, 0.8)",
+                backgroundClass         : "",
+                image                   : "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><circle r='80' cx='500' cy='90'/><circle r='80' cx='500' cy='910'/><circle r='80' cx='90' cy='500'/><circle r='80' cx='910' cy='500'/><circle r='80' cx='212' cy='212'/><circle r='80' cx='788' cy='212'/><circle r='80' cx='212' cy='788'/><circle r='80' cx='788' cy='788'/></svg>",
+                imageAnimation          : "2000ms rotate_right",
+                imageAutoResize         : true,
+                imageResizeFactor       : 1,
+                imageColor              : "#202020",
+                imageClass              : "",
+                imageOrder              : 1,
+                // Text
+                text                    : "Uploading...",
+                textAnimation           : "",
+                textAutoResize          : true,
+                textResizeFactor        : 0.5,
+                textColor               : "#202020",
+                textClass               : "upload-status",
+                textOrder               : 4,
+                // Progress
+                progress                : true,
+                progressAutoResize      : true,
+                progressResizeFactor    : 0.25,
+                progressColor           : "#a0a0a0",
+                progressClass           : "",
+                progressOrder           : 5,
+                progressFixedPosition   : "",
+                progressSpeed           : 200,
+                progressMin             : 0,
+                progressMax             : 100,
+                // Sizing
+                size                    : 50,
+                maxSize                 : 120,
+                minSize                 : 20,
+                // Misc
+                direction               : "column",
+                fade                    : true,
+                resizeInterval          : 50,
+                zIndex                  : 2147483647
+            });
+        });
+
+        $(document).ajaxStart(function(){
+            $.LoadingOverlay("show");
+        });
+        $(document).ajaxStop(function(){
+            $.LoadingOverlay("hide");
+        });
+    </script>
+</body>
+
+</html>
