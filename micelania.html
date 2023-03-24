@@ -617,9 +617,8 @@
                         const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
                         $("#especialista_section").remove();
                         clearFormDataItem("especialista");
-                        formData.append("especialista", label + " " + ddate + " " + time);
-                        $('#results').append(`<p>${label + " " + ddate}</p>`);
-                        $('#results').append(`<p><span class="text-white">${label + "</span> " + time}</p>`);
+                        formData.append("especialista", label + " " + time);
+                        $('#results').append(`<p>${label + " " + time}</p>`);
                     });
                 })
             });
