@@ -210,8 +210,8 @@
 
                     return xhr;
                 },
-                url: 'https://dermaforms.prodev.app/generate/microblading',
-                // url: 'http://localhost:8082/generate/microblading',
+                // url: 'https://dermaforms.prodev.app/generate/microblading',
+                url: 'http://localhost:8082/generate/microblading',
                 cache: false,
                 contentType: false,
                 processData: false,
@@ -444,8 +444,8 @@
                 $("#color_section").append( createInput("color_anterior_input") );
 
                 $("#color_anterior_input").blur(function() {
-                    clearFormDataItem("color_angerior");
-                    formData.append( "color_angerior", $(this).val() );
+                    clearFormDataItem("color_anterior");
+                    formData.append( "color_anterior", $(this).val() );
                     $("#color_section").remove();
 
                     Consentimiento();
@@ -486,8 +486,8 @@
                         $("#consentimiento_section").append( createInput("condiciones_previas_input") );
 
                         $("#condiciones_previas_input").blur(function() {
-                            clearFormDataItem("consentimiento");
-                            formData.append("consentimiento", $(this).val());
+                            clearFormDataItem("condiciones_previas");
+                            formData.append("condiciones_previas", $(this).val());
     
                             $('#consentimiento_section').hide();
                             InicialImageGroup();
@@ -610,9 +610,10 @@
                 return false;
             }
 
-            $('#procedure').append('<div id="proporcion_section" class="procedure"><button class="btn btn-primary" id="proporcion_btn">PIGMENTOS</button></div>');
+            $('#procedure').append('<div id="proporcion_section" class="procedure"><button class="btn btn-primary" id="proporcion_btn">PROPORCION</button></div>');
             
             $("#proporcion_btn").click(function() {
+                if (document.querySelector("#pro_1_gotas")) return false;
                 let items = [];
                 if (pigStatus == 1) {
                     items = ["1 Gotas", "2 Gotas", "3 Gotas", "4 Gotas"];
@@ -620,7 +621,7 @@
                     items = ["Porciento 50/50", "Porciento 60/40", "Porciento 40/60"];
                 }
                 items.forEach(function(item) {
-                    const itemId = toFriendlyID(item);
+                    const itemId = "pro_" + toFriendlyID(item);
                     $("#proporcion_section").append( createCheckbox(itemId, item) );
     
                     $("#" + itemId).click(function() {
