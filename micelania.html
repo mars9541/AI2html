@@ -312,20 +312,15 @@
                             nombre += capitalLetter(name[i]) + " ";
                         }
                         let date = new Date();
-                        const generate_date = `${padStart(date.getMonth() * 1 + 1)}/${padStart(date.getDate())}/${date.getFullYear()}`;
                         const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
                         
                         clearFormDataItem("name");
                         formData.append("name", nombre);
 
-                        clearFormDataItem("date");
-                        formData.append("date", generate_date);
-
                         clearFormDataItem("time");
                         formData.append("time", time);
                         
                         $('#results').append(`<h6>${nombre}</h6>`);
-                        $('#results').append(`<p>${generate_date}</p>`);
 
                         $('#name_section').hide();
                         Procedimiento();
@@ -341,8 +336,13 @@
             const sectionId = (flag == 1 ? "#modificacion_section" : "#procedimiento_section");
             const formDataId = (flag == 1 ? "modify" : "procedimiento");
             let date = new Date();
+            const generate_date = `${padStart(date.getMonth() * 1 + 1)}/${padStart(date.getDate())}/${date.getFullYear()}`;
             const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
-            const modeTxt = (flag == 1 ? " (MOD)" : "") + " " + time;
+            const modeTxt = (flag == 1 ? " (MOD)" : "") + " <span id='date_time_txt'>" + generate_date + " " + time + "</span>";
+            
+            clearFormDataItem("date");
+            formData.append("date", generate_date);
+
             clearFormDataItem("send_time");
             formData.append("send_time", time);
                 
@@ -352,17 +352,23 @@
 
             $(sectionId).append('<div id="' + subId + '" class="procedure"></div>');
 
-            let henna = createCheckbox('henna', 'Henna');
-            let cejas = createCheckbox('pinza', 'Cejas con Pinza');
-            let dental = createCheckbox('dental', 'Blanqueamiento Dental');
+            if (!flag || (flag && especStatus != 0)) {
+                let henna = createCheckbox('henna', 'Henna');
+                $(subSelector).append(henna);
+            }
+            if (!flag || (flag && especStatus != 1)) {
+                let cejas = createCheckbox('pinza', 'Cejas con Pinza');
+                $(subSelector).append(cejas);
+            }
+            if (!flag || (flag && especStatus != 2)) {
+                let dental = createCheckbox('dental', 'Blanqueamiento Dental');
+                $(subSelector).append(dental);
+            }
             let wax = createCheckbox('wax', 'Wax');
             let lifting = createCheckbox('lifting', 'Lifting');
             let parafina = createCheckbox('parafina', 'Parafina');
             let remocion = createCheckbox('remocion', 'Remoción');
 
-            $(subSelector).append(henna);
-            $(subSelector).append(cejas);
-            $(subSelector).append(dental);
             $(subSelector).append(wax);
             $(subSelector).append(lifting);
             $(subSelector).append(parafina);
@@ -377,8 +383,12 @@
                     formData.append(formDataId, selectedText.toUpperCase());
                     $("#" + backTxtId).remove();
                     $('#results').append(`<p id="${backTxtId}">${selectedText}${modeTxt}</p>`);
-                    $(sectionId).remove();
-
+                    if (flag) {
+                        $(subSelector).empty();
+                        createMotivoCambio()
+                    } else {
+                        $(sectionId).remove();
+                    }
                     Modificacion();
                     Especialista();
                     ImageGroup();
@@ -390,13 +400,19 @@
                     let subLabels = ['Wax de Cejas', 'Wax de Labio Superior', 'Wax de Barbilla'];
 
                     subLabels.forEach(function (label) {
+                        if (flag && formData.get("procedimiento") == "Wax Of " + label) return false;
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
                             $("#" + backTxtId).remove();
                             $('#results').append(`<p id="${backTxtId}">${"" + label}${modeTxt}</p>`);
-                            $(sectionId).remove();
+                            if (flag) {
+                                $(subSelector).empty();
+                                createMotivoCambio();
+                            } else {
+                                $(sectionId).remove();
+                            }
                             clearFormDataItem(formDataId);
-                            formData.append(formDataId, "Wax Of " + label.toUpperCase());
+                            formData.append(formDataId, "Wax Of " + label);
                             especStatus = 3;
                             Modificacion();
                             Especialista();
@@ -411,13 +427,19 @@
                     $(subSelector).empty();
                     let subLabels = ['Lifting de Cejas', 'Lifting de Pestañas',];
                     subLabels.forEach(function (label, pIndex) {
+                        if (flag && formData.get("procedimiento") == label) return false;
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
                             $("#" + backTxtId).remove();
                             $('#results').append(`<p id="${backTxtId}">${"" + label}${modeTxt}</p>`);
-                            $(sectionId).remove();
+                            if (flag) {
+                                $(subSelector).empty();
+                                createMotivoCambio()
+                            } else {
+                                $(sectionId).remove();
+                            }
                             clearFormDataItem(formDataId);
-                            formData.append(formDataId, " " + label.toUpperCase());
+                            formData.append(formDataId, label);
                             especStatus = 4;
                             liftingStatus = pIndex;
                             Especialista();
@@ -437,13 +459,19 @@
                     $(subSelector).empty();
                     let subLabels = ['Parafina De Manos', 'Parafina De Pies'];
                     subLabels.forEach(function (label) {
+                        if (flag && formData.get("procedimiento") == label) return false;
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
                             $("#" + backTxtId).remove();
                             $('#results').append(`<p id="${backTxtId}">${"" + label}${modeTxt}</p>`);
-                            $(sectionId).remove();
+                            if (flag) {
+                                $(subSelector).empty();
+                                createMotivoCambio();
+                            } else {
+                                $(sectionId).remove();
+                            }
                             clearFormDataItem(formDataId);
-                            formData.append(formDataId, "Parafina " + label.toUpperCase());
+                            formData.append(formDataId, "Parafina " + label);
                             especStatus = 5;
                             Modificacion();
                             Especialista();
@@ -457,9 +485,15 @@
                     $(subSelector).empty();
                     let subLabels = ['Remocion de Tattoo por enzimas', 'Remocion de Tattoo por laser', 'Remocion de Cejas por enzimas', 'Remocion de Cejas por laser'];
                     subLabels.forEach(function (label, rIndex) {
+                        if (flag && formData.get("procedimiento") == label) return false;
                         $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                         $('#' + toFriendlyID(label)).click(function () {
-                            $(subSelector).empty();
+                            if (flag) {
+                                $(subSelector).empty();
+                                createMotivoCambio();
+                            } else {
+                                $(subSelector).empty();
+                            }
                             $("#" + backTxtId).remove();
                             $('#results').append(`<p id="${backTxtId}">${label}${modeTxt}</p>`);
                             $(sectionId).remove();
@@ -492,47 +526,32 @@
                 if (document.querySelector('#modificacion_sub')) {
                     return;
                 }
-                
-                $("#modificacion_section").append('<div id="modificacion_sub" class="procedure"></div>');
 
-                let nuevo_proc = createCheckbox('nuevo_proc', 'Nuevo procedimiento');
-                let motivo_del = createCheckbox('motivo_del', 'Motivo del cambio');
-
-                $('#modificacion_sub').append(nuevo_proc);
-                $('#modificacion_sub').append(motivo_del);
-                
-                $("#motivo_del").click(function() {
-                    $('#modificacion_sub').append(createInput("modify_input"));
-
-                    $('#modify_input').change(function () {
-                        let inputVal = $(this).val();
-                        $("#proce_txt").remove();
-                        $("#results").append(`<h6 id="proce_txt">${inputVal} (MOD)</h6>`);
-                        clearFormDataItem("modify");
-                        formData.append("modify", inputVal);
-                    });
-                    
-                    $("#modify_input").blur(function() {
-                        Consentimiento();
-                        $("#modificacion_section").remove();
-                    });
-                });
-                $("#nuevo_proc").click(function() {
-                    $("#modificacion_sub").remove();
-                    createProCheckboxList(true)
-                });
+                createProCheckboxList(true);
             });
 
         }
 
+        const createMotivoCambio = function() {
+            const ele = createInput("reason_input", "Motivo del cambio");
+            $("#modificacion_section").append( ele );
+
+            $("#reason_input").blur(function() {
+                let inputVal = $(this).val();
+                clearFormDataItem("motivo_cambio_reason");
+                formData.append("motivo_cambio_reason", inputVal);
+                $("#modificacion_section").remove();
+            });
+        }
         const Consentimiento = function() {
             if (document.querySelector('#consentimiento_section')) {
                 return false;
             }
 
-            $("#procedure").append('<div id="consentimiento_section" class="procedure group-b"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>');
+            $("#procedure").append('<div id="consentimiento_section" class="procedure"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>');
             
             $("#consentimiento").click(function() {
+                $("#consentimiento_section").append('<div id="consentimiento_sub_section" class="procedure"></div>');
                 if (document.querySelector('#documento_firmado')) {
                     return false;
                 }
@@ -556,13 +575,27 @@
                     </label></div>
                 `);
     
-                $('#consentimiento_section').append(documento_firmado, allergy, no_allergy);
+                $('#consentimiento_sub_section').append(documento_firmado, allergy, no_allergy);
     
                 $('#documento_firmado').change(function () {
                     if ($(this).prop('checked')) {
-                        clearFormDataItem("consentimiento");
-                        formData.append("consentimiento", "Documento Firmado");
-                        $('#consentimiento_section').hide();
+                        // clearFormDataItem("consentimiento");
+                        // formData.append("consentimiento", "Documento Firmado");
+                        $('#consentimiento_sub_section').empty();;
+
+                        $("#consentimiento_sub_section").append( createInput("fecha_documento", "Fecha documento anterior") );
+                        $("#consentimiento_sub_section").append( createCheckbox("firmado_hoy", "Consentimiento firmado hoy") );
+
+                        $("#fecha_documento").blur(function() {
+                            clearFormDataItem("consentimiento");
+                            formData.append("consentimiento", $(this).val() );
+                            $("#consentimiento_section").remove();
+                        });
+                        $("#firmado_hoy").change(function() {
+                            clearFormDataItem("consentimiento");
+                            formData.append("consentimiento", "Consentimiento firmado hoy");
+                            $("#consentimiento_section").remove();
+                        });
                     }
                 });
                 $('#no_padece_de_alergia').change(function () {
@@ -619,7 +652,7 @@
                         $("#especialista_section").remove();
                         clearFormDataItem("especialista");
                         formData.append("especialista", label + " " + time);
-                        $('#results').append(`<p>${label + " " + time}</p>`);
+                        $("#date_time_txt").text(ddate + " " + time);
                     });
                 })
             });

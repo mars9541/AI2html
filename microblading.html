@@ -314,7 +314,7 @@
                         formData.append("date", generate_date);
                         
                         $('#results').append(`<h6>${nombre}</h6>`);
-                        $('#results').append(`<p>${generate_date}</p>`);
+                        // $('#results').append(`<p>${generate_date}</p>`);
 
                         $('#name_section').hide();
                     }
@@ -324,10 +324,11 @@
 
         const createProCheckboxList = function (flag = false) {
             let date = new Date();
+            const generate_date = `${padStart(date.getMonth() * 1 + 1)}/${padStart(date.getDate())}/${date.getFullYear()}`;
             const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
             clearFormDataItem("time");
             formData.append("time", time);
-            const modeTxt = (flag == 1 ? " (MOD)" : "") + " " + time;
+            const modeTxt = (flag == 1 ? " (MOD)" : "") + " " + generate_date + " " + time;
             const backTxtId = "proce_txt";
             const subSelector = (flag == 1 ? "#modificacion_sub" : "#procedimiento_sub");
             const subId = (flag == 1 ? "modificacion_sub" : "procedimiento_sub");
@@ -344,13 +345,19 @@
                             "Retoque Hibridas", "Retoque Ombré", "Retoque Neutralización", "Valoración Cejas"];
             
             labels.forEach(function(label) {
+                if (flag && formData.get("procedimiento") == label) return false;
                 $(subSelector).append(createCheckbox(toFriendlyID(label), label));
                 $('#' + toFriendlyID(label)).click(function () {
                     $("#" + backTxtId).remove();
                     $('#results').append(`<p id="${backTxtId}">${label}${modeTxt}</p>`);
-                    $(sectionId).remove();
+                    if (flag) {
+                        $(subSelector).empty();
+                        createMotivoCambio()
+                    } else {
+                        $(sectionId).remove();
+                    }
                     clearFormDataItem(formDataId);
-                    formData.append(formDataId, label.toUpperCase());
+                    formData.append(formDataId, label);
                     Modificacion();
                     Tiempo();
                 });
@@ -374,37 +381,22 @@
                 if (document.querySelector('#modificacion_sub')) {
                     return;
                 }
-                
-                $("#modificacion_section").append('<div id="modificacion_sub" class="procedure"></div>');
 
-                let nuevo_proc = createCheckbox('nuevo_proc', 'Nuevo procedimiento');
-                let motivo_del = createCheckbox('motivo_del', 'Motivo del cambio');
-
-                $('#modificacion_sub').append(nuevo_proc);
-                $('#modificacion_sub').append(motivo_del);
-                
-                $("#motivo_del").click(function() {
-                    $('#modificacion_sub').append(createInput("modify_input"));
-
-                    $('#modify_input').change(function () {
-                        let inputVal = $(this).val();
-                        $("#proce_txt").remove();
-                        $("#results").append(`<h6 id="proce_txt">${inputVal} (MOD)</h6>`);
-                        clearFormDataItem("modify");
-                        formData.append("modify", inputVal);
-                    });
-                    
-                    $("#modify_input").blur(function() {
-                        Consentimiento();
-                        $("#modificacion_section").remove();
-                    });
-                });
-                $("#nuevo_proc").click(function() {
-                    $("#modificacion_sub").remove();
-                    createProCheckboxList(true)
-                });
+                createProCheckboxList(true);
             });
 
+        }
+
+        const createMotivoCambio = function() {
+            const ele = createInput("reason_input", "Motivo del cambio");
+            $("#modificacion_section").append( ele );
+
+            $("#reason_input").blur(function() {
+                let inputVal = $(this).val();
+                clearFormDataItem("motivo_cambio_reason");
+                formData.append("motivo_cambio_reason", inputVal);
+                $("#modificacion_section").remove();
+            });
         }
 
         const Tiempo = function() {
@@ -461,23 +453,50 @@
             $("#procedure").append('<div id="consentimiento_section" class="procedure"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>');
             
             $("#consentimiento").click(function() {
-                if (document.querySelector('#documento_firmado')) {
+                if (document.querySelector('#consentimiento_sub_section')) {
                     return false;
                 }
+                $("#consentimiento_section").append('<div id="consentimiento_sub_section" class="procedure"></div>');
+
                 ["Documento Firmado", "Condiciones Previas"].forEach(function(label, index) {
                     const itemId = toFriendlyID(label);
-                    $("#consentimiento_section").append( createCheckbox(itemId, label) );
+                    $("#consentimiento_sub_section").append( createCheckbox(itemId, label) );
                 });
                     
                 $('#documento_firmado').change(function () {
                     if ($(this).prop('checked')) {
-                        clearFormDataItem("consentimiento");
-                        formData.append("consentimiento", "Documento Firmado");
-                        $('#consentimiento_section').hide();
+                        $("#consentimiento_sub_section").empty();
 
-                        InicialImageGroup();
-                        Pigmentos();
-                        Proporcion();
+                        $("#consentimiento_sub_section").append( createInput("fecha_documento", "Fecha documento anterior") );
+                        $("#consentimiento_sub_section").append( createCheckbox("firmado_hoy", "Consentimiento firmado hoy") );
+
+                        $("#fecha_documento").blur(function() {
+                            clearFormDataItem("consentimiento");
+                            formData.append("consentimiento", $(this).val() );
+                            $("#consentimiento_section").remove();
+
+                            InicialImageGroup();
+                            Pigmentos();
+                            Proporcion();
+
+                        });
+                        $("#firmado_hoy").change(function() {
+                            clearFormDataItem("consentimiento");
+                            formData.append("consentimiento", "Consentimiento firmado hoy");
+                            $("#consentimiento_section").remove();
+
+                            InicialImageGroup();
+                            Pigmentos();
+                            Proporcion();
+                        });
+
+                        // clearFormDataItem("consentimiento");
+                        // formData.append("consentimiento", "Documento Firmado");
+                        // $('#consentimiento_section').hide();
+
+                        // InicialImageGroup();
+                        // Pigmentos();
+                        // Proporcion();
                     }
                 });
 
