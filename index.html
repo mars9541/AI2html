@@ -1,4 +1,5 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -359,12 +360,15 @@
                     $('#procedure_b').append('<div id="procedure_b_2" class="procedure"><button class="btn btn-primary" id="maping_pic">MAPING PIC</button></div>');
                     $('#procedure_b').append('<div id="procedure_b_3" class="procedure"><button class="btn btn-primary" id="eyes_pic">EYES PIC</button></div>');
                     $('#procedure_b').append('<div id="procedure_b_4" class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>');
+
+
                     $('#tipo_de_glue').click(function () {
                         initTipoDeGlue();
                     });
 
                     const initTipoDeGlue = function () {
                         if (document.querySelector('#procedure_b_1_sub')) return;
+
                         let labels = [
                             'Regular',
                             'Antiallergic'
@@ -373,10 +377,12 @@
                         $('#procedure_b_3').hide();
                         $('#procedure_b_4').hide();
                         $('#procedure_b_1').append('<div id="procedure_b_1_sub" class="procedure"></div>');
+
                         labels.forEach(label => {
                             let el = createCheckbox(toFriendlyID(label), label);
                             $('#procedure_b_1_sub').append(el);
                             $(`#${toFriendlyID(label)}`).click(function () {
+
                                 $('#procedure_b_1').hide();
                                 $('#procedure_b_1_sub').remove();
                                 $('#procedure_b_2').show();
