@@ -367,7 +367,6 @@
 
                     const initTipoDeGlue = function () {
                         if (document.querySelector('#procedure_b_1_sub')) return;
-
                         let labels = [
                             'Regular',
                             'Antiallergic'
@@ -376,7 +375,6 @@
                         $('#procedure_b_3').hide();
                         $('#procedure_b_4').hide();
                         $('#procedure_b_1').append('<div id="procedure_b_1_sub" class="procedure"></div>');
-
                         labels.forEach(label => {
                             let el = createCheckbox(toFriendlyID(label), label);
                             $('#procedure_b_1_sub').append(el);
