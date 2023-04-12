@@ -153,8 +153,8 @@
             <div class="flex-column gap-2 forms" id="procedure" style="display: none;">
                 <div id="procedure_1" class="procedure"><button class="btn
                             btn-primary" id="nombre">NOMBRE</button></div>
-                <div id="procedure_2" class="procedure"><button class="btn
-                            btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>
+                <div id="procedure_2" class="procedure"><button class="btn btn-primary"
+                        id="consentimiento">CONSENTIMIENTO</button></div>
                 <div id="procedure_3" class="procedure"><button class="btn
                             btn-primary" id="inicial_pic">INICIAL PIC</button></div>
                 <div id="procedure_4" class="procedure"><button class="btn
@@ -172,7 +172,8 @@
     </footer>
     <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
     <script src="./bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
     <script src="./js/heic2any.js"></script>
     <script>
         const padStart = function (text, length = 2, replacedString = '0') {
@@ -220,17 +221,17 @@
             formData.append("eyes", $("#eyes_pic_file").get(0).files[0]);
             formData.append("final", $("#final_pic_file").get(0).files[0]);
 
-            if ( formData.get("productos_comprados") ) {
+            if (formData.get("productos_comprados")) {
                 localStorage.setItem("name", formData.get("name"));
                 localStorage.setItem("date", formData.get("date"));
                 window.open("micelania.html", "_self");
             }
 
             $.ajax({
-                xhr: function() {
+                xhr: function () {
                     var xhr = new window.XMLHttpRequest();
 
-                    xhr.upload.addEventListener("progress", function(evt) {
+                    xhr.upload.addEventListener("progress", function (evt) {
                         if (evt.lengthComputable) {
                             var percentComplete = evt.loaded / evt.total;
                             percentComplete = parseInt(percentComplete * 100);
@@ -258,7 +259,7 @@
             });
         }
 
-        const clearFormDataItem = function(key) {
+        const clearFormDataItem = function (key) {
             formData.delete(key);
         }
 
@@ -600,13 +601,13 @@
 
             }
             const showButtonsD = function () {
-                
+
                 if (!isDButtonCreated) {
                     isDButtonCreated = true;
                     if (document.querySelector('#procedure_d')) {
                         return;
                     }
-                    
+
                     $('#procedure').append('<div id="procedure_d" class="procedure"></div>')
                     $('#procedure_d').append('<div id="procedure_d_1" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
                     $('#procedure_d').append('<div id="procedure_d_3" class="procedure"><button class="btn btn-primary" id="anotaciones_otra">ANOTACIONES</button></div>');
@@ -642,8 +643,8 @@
                             });
                         });
                     });
-                    
-                    $("#anotaciones_otra").click(function() {
+
+                    $("#anotaciones_otra").click(function () {
                         if (document.querySelector('#procedure_d_3_sub')) return;
                         $('#procedure_d_3').append('<div id="procedure_d_3_sub" class="procedure"></div>');
                         $('#procedure_d_3_sub').append(createInput('otra', "Otra"));
@@ -659,7 +660,7 @@
                             update();
                         });
                     });
-                    
+
                     $('#enviar').click(function () {
                         var date = new Date();
                         var sendDate = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
@@ -879,7 +880,7 @@
                     });
                 })
 
-                $('#half_set').change(function() {
+                $('#half_set').change(function () {
                     $('#procedure_4_sub').remove();
                     clearFormDataItem("modificacion");
                     formData.append("modificacion", "HALF SET");
@@ -1122,82 +1123,82 @@
             $('#main_container').click(function () {
                 start();
             });
-            
+
             $.LoadingOverlaySetup({
-                background              : "rgba(255, 255, 255, 0.8)",
-                backgroundClass         : "",
-                image                   : "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><circle r='80' cx='500' cy='90'/><circle r='80' cx='500' cy='910'/><circle r='80' cx='90' cy='500'/><circle r='80' cx='910' cy='500'/><circle r='80' cx='212' cy='212'/><circle r='80' cx='788' cy='212'/><circle r='80' cx='212' cy='788'/><circle r='80' cx='788' cy='788'/></svg>",
-                imageAnimation          : "2000ms rotate_right",
-                imageAutoResize         : true,
-                imageResizeFactor       : 1,
-                imageColor              : "#202020",
-                imageClass              : "",
-                imageOrder              : 1,
+                background: "rgba(255, 255, 255, 0.8)",
+                backgroundClass: "",
+                image: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><circle r='80' cx='500' cy='90'/><circle r='80' cx='500' cy='910'/><circle r='80' cx='90' cy='500'/><circle r='80' cx='910' cy='500'/><circle r='80' cx='212' cy='212'/><circle r='80' cx='788' cy='212'/><circle r='80' cx='212' cy='788'/><circle r='80' cx='788' cy='788'/></svg>",
+                imageAnimation: "2000ms rotate_right",
+                imageAutoResize: true,
+                imageResizeFactor: 1,
+                imageColor: "#202020",
+                imageClass: "",
+                imageOrder: 1,
                 // Text
-                text                    : "Uploading...",
-                textAnimation           : "",
-                textAutoResize          : true,
-                textResizeFactor        : 0.5,
-                textColor               : "#202020",
-                textClass               : "upload-status",
-                textOrder               : 4,
+                text: "Uploading...",
+                textAnimation: "",
+                textAutoResize: true,
+                textResizeFactor: 0.5,
+                textColor: "#202020",
+                textClass: "upload-status",
+                textOrder: 4,
                 // Progress
-                progress                : true,
-                progressAutoResize      : true,
-                progressResizeFactor    : 0.25,
-                progressColor           : "#a0a0a0",
-                progressClass           : "",
-                progressOrder           : 5,
-                progressFixedPosition   : "",
-                progressSpeed           : 200,
-                progressMin             : 0,
-                progressMax             : 100,
+                progress: true,
+                progressAutoResize: true,
+                progressResizeFactor: 0.25,
+                progressColor: "#a0a0a0",
+                progressClass: "",
+                progressOrder: 5,
+                progressFixedPosition: "",
+                progressSpeed: 200,
+                progressMin: 0,
+                progressMax: 100,
                 // Sizing
-                size                    : 50,
-                maxSize                 : 120,
-                minSize                 : 20,
+                size: 50,
+                maxSize: 120,
+                minSize: 20,
                 // Misc
-                direction               : "column",
-                fade                    : true,
-                resizeInterval          : 50,
-                zIndex                  : 2147483647
+                direction: "column",
+                fade: true,
+                resizeInterval: 50,
+                zIndex: 2147483647
             });
         });
 
-        $(document).ajaxStart(function(){
+        $(document).ajaxStart(function () {
             $.LoadingOverlay("show");
         });
-        $(document).ajaxStop(function(){
+        $(document).ajaxStop(function () {
             $.LoadingOverlay("hide");
         });
 
-        const convertHeicToJpg = function(input) {
+        const convertHeicToJpg = function (input) {
             var oldFile = $(input).val().split('\\').pop();
             var oldFileName = oldFile.substr(0, oldFile.lastIndexOf('.')) || oldFile;
 
             var fileName = $(input).val();
             var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
-            if(fileNameExt == "heic") {
+            if (fileNameExt == "heic") {
                 var blob = $(input)[0].files[0]; //ev.target.files[0];
                 heic2any({
                     blob: blob,
                     toType: "image/png",
                 }).then(function (resultBlob) {
                     var url = URL.createObjectURL(resultBlob);
-                    $(input).parent().find(".upload-file").css("background-image", "url("+url+")"); //previewing the uploaded picture
+                    $(input).parent().find(".upload-file").css("background-image", "url(" + url + ")"); //previewing the uploaded picture
                     //adding converted picture to the original <input type="file">
                     let fileInputElement = $(input)[0];
                     let container = new DataTransfer();
-                    let file = new File([resultBlob], oldFileName + ".png",{type:"image/png", lastModified:new Date().getTime()});
+                    let file = new File([resultBlob], oldFileName + ".png", { type: "image/png", lastModified: new Date().getTime() });
                     container.items.add(file);
 
                     fileInputElement.files = container.files;
                     console.log("added");
                 })
-                .catch(function (x) {
-                    console.log(x.code);
-                    console.log(x.message);
-                });
+                    .catch(function (x) {
+                        console.log(x.code);
+                        console.log(x.message);
+                    });
             }
         }
     </script>
