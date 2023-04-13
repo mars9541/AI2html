@@ -168,7 +168,8 @@
     </footer>
     <script src="./bootstrap/js/jquery-3.6.3.min.js"></script>
     <script src="./bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
     <script src="./js/heic2any.js"></script>
     <script>
         const states = [];
@@ -185,9 +186,9 @@
             ["Lien", "Irianys", "Laura", "Susan"],
             ["Yanisbel"]
         ];
-        
+
         var formData = new FormData();
-        
+
         const padStart = function (text, length = 2, replacedString = '0') {
             let newText = text + '';
             while (newText.length < length) {
@@ -204,10 +205,10 @@
             formData.append("status", selectedSatus);
 
             $.ajax({
-                xhr: function() {
+                xhr: function () {
                     var xhr = new window.XMLHttpRequest();
 
-                    xhr.upload.addEventListener("progress", function(evt) {
+                    xhr.upload.addEventListener("progress", function (evt) {
                         if (evt.lengthComputable) {
                             var percentComplete = evt.loaded / evt.total;
                             percentComplete = parseInt(percentComplete * 100);
@@ -262,32 +263,32 @@
             return $(`<label id="${id}_label" class="label_file">Accion de tomar<input id="${id}" type="file" style="visibility: hidden; position: absolute" accept="image/png, image/gif, image/jpeg"></label>`);
         }
 
-        const convertHeicToJpg = function(input) {
+        const convertHeicToJpg = function (input) {
             var oldFile = $(input).val().split('\\').pop();
             var oldFileName = oldFile.substr(0, oldFile.lastIndexOf('.')) || oldFile;
 
             var fileName = $(input).val();
             var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
-            if(fileNameExt == "heic") {
+            if (fileNameExt == "heic") {
                 var blob = $(input)[0].files[0]; //ev.target.files[0];
                 heic2any({
                     blob: blob,
                     toType: "image/png",
                 }).then(function (resultBlob) {
                     var url = URL.createObjectURL(resultBlob);
-                    $(input).parent().find(".upload-file").css("background-image", "url("+url+")"); //previewing the uploaded picture
+                    $(input).parent().find(".upload-file").css("background-image", "url(" + url + ")"); //previewing the uploaded picture
                     //adding converted picture to the original <input type="file">
                     let fileInputElement = $(input)[0];
                     let container = new DataTransfer();
-                    let file = new File([resultBlob], oldFileName + ".png",{type:"image/png", lastModified:new Date().getTime()});
+                    let file = new File([resultBlob], oldFileName + ".png", { type: "image/png", lastModified: new Date().getTime() });
                     container.items.add(file);
 
                     fileInputElement.files = container.files;
                 })
-                .catch(function (x) {
-                    console.log(x.code);
-                    console.log(x.message);
-                });
+                    .catch(function (x) {
+                        console.log(x.code);
+                        console.log(x.message);
+                    });
             }
         }
 
@@ -295,11 +296,11 @@
             return label.replace(new RegExp('( )', 'g'), '_').replace(new RegExp('/', 'g'), '_').toLowerCase();
         }
 
-        const clearFormDataItem = function(key) {
+        const clearFormDataItem = function (key) {
             formData.delete(key);
         }
 
-        const Nombre = function() {
+        const Nombre = function () {
             if (!document.querySelector('#full_name')) {
                 $('#name_section').append('<input id="full_name" name="full_name" type="text" class="form-control">')
                 $('#full_name').change(function () {
@@ -313,13 +314,13 @@
                         }
                         let date = new Date();
                         const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
-                        
+
                         clearFormDataItem("name");
                         formData.append("name", nombre);
 
                         clearFormDataItem("time");
                         formData.append("time", time);
-                        
+
                         $('#results').append(`<h6>${nombre}</h6>`);
 
                         $('#name_section').hide();
@@ -339,13 +340,13 @@
             const generate_date = `${padStart(date.getMonth() * 1 + 1)}/${padStart(date.getDate())}/${date.getFullYear()}`;
             const time = `${padStart(date.getHours())}:${padStart(date.getMinutes())}`;
             const modeTxt = (flag == 1 ? " (MOD)" : "") + " <span id='date_time_txt'>" + generate_date + " " + time + "</span>";
-            
+
             clearFormDataItem("date");
             formData.append("date", generate_date);
 
             clearFormDataItem("send_time");
             formData.append("send_time", time);
-                
+
             if (document.querySelector(subSelector) || !formData.get("name")) {
                 return;
             }
@@ -374,8 +375,8 @@
             $(subSelector).append(parafina);
             $(subSelector).append(remocion);
 
-            $(["#henna", "#pinza", "#dental"]).each(function(index, item) {
-                $(item).change(function() {
+            $(["#henna", "#pinza", "#dental"]).each(function (index, item) {
+                $(item).change(function () {
                     especStatus = index;
                     let selectedId = $(this).attr("id");
                     let selectedText = $("label[for='" + selectedId + "']").text();
@@ -394,7 +395,7 @@
                     ImageGroup();
                 });
             });
-            $("#wax").change(function() {
+            $("#wax").change(function () {
                 if ($(this).prop('checked')) {
                     $(subSelector).empty();
                     let subLabels = ['Wax de Cejas', 'Wax de Labio Superior', 'Wax de Barbilla'];
@@ -422,7 +423,7 @@
                 }
 
             });
-            $("#lifting").change(function() {
+            $("#lifting").change(function () {
                 if ($(this).prop('checked')) {
                     $(subSelector).empty();
                     let subLabels = ['Lifting de Cejas', 'Lifting de Pestañas',];
@@ -454,7 +455,7 @@
                     })
                 }
             });
-            $("#parafina").change(function() {
+            $("#parafina").change(function () {
                 if ($(this).prop('checked')) {
                     $(subSelector).empty();
                     let subLabels = ['Parafina De Manos', 'Parafina De Pies'];
@@ -480,7 +481,7 @@
                     })
                 }
             });
-            $("#remocion").change(function() {
+            $("#remocion").change(function () {
                 if ($(this).prop('checked')) {
                     $(subSelector).empty();
                     let subLabels = ['Remocion de Tattoo por enzimas', 'Remocion de Tattoo por laser', 'Remocion de Cejas por enzimas', 'Remocion de Cejas por laser'];
@@ -522,7 +523,7 @@
 
             $("#procedure").append('<div id="modificacion_section" class="procedure group-b"><button class="btn btn-primary" id="modificacion">MODIFICACION</button></div>');
 
-            $("#modificacion").click(function() {
+            $("#modificacion").click(function () {
                 if (document.querySelector('#modificacion_sub')) {
                     return;
                 }
@@ -532,25 +533,25 @@
 
         }
 
-        const createMotivoCambio = function() {
+        const createMotivoCambio = function () {
             const ele = createInput("reason_input", "Motivo del cambio");
-            $("#modificacion_section").append( ele );
+            $("#modificacion_section").append(ele);
 
-            $("#reason_input").blur(function() {
+            $("#reason_input").blur(function () {
                 let inputVal = $(this).val();
                 clearFormDataItem("motivo_cambio_reason");
                 formData.append("motivo_cambio_reason", inputVal);
                 $("#modificacion_section").remove();
             });
         }
-        const Consentimiento = function() {
+        const Consentimiento = function () {
             if (document.querySelector('#consentimiento_section')) {
                 return false;
             }
 
             $("#procedure").append('<div id="consentimiento_section" class="procedure"><button class="btn btn-primary" id="consentimiento">CONSENTIMIENTO</button></div>');
-            
-            $("#consentimiento").click(function() {
+
+            $("#consentimiento").click(function () {
                 $("#consentimiento_section").append('<div id="consentimiento_sub_section" class="procedure"></div>');
                 if (document.querySelector('#documento_firmado')) {
                     return false;
@@ -574,24 +575,24 @@
                         No consentimiento
                     </label></div>
                 `);
-    
+
                 $('#consentimiento_sub_section').append(documento_firmado, allergy, no_allergy);
-    
+
                 $('#documento_firmado').change(function () {
                     if ($(this).prop('checked')) {
                         // clearFormDataItem("consentimiento");
                         // formData.append("consentimiento", "Documento Firmado");
                         $('#consentimiento_sub_section').empty();;
 
-                        $("#consentimiento_sub_section").append( createInput("fecha_documento", "Fecha documento anterior") );
-                        $("#consentimiento_sub_section").append( createCheckbox("firmado_hoy", "Consentimiento firmado hoy") );
+                        $("#consentimiento_sub_section").append(createInput("fecha_documento", "Fecha documento anterior"));
+                        $("#consentimiento_sub_section").append(createCheckbox("firmado_hoy", "Consentimiento firmado hoy"));
 
-                        $("#fecha_documento").blur(function() {
+                        $("#fecha_documento").blur(function () {
                             clearFormDataItem("consentimiento");
-                            formData.append("consentimiento", $(this).val() );
+                            formData.append("consentimiento", $(this).val());
                             $("#consentimiento_section").remove();
                         });
-                        $("#firmado_hoy").change(function() {
+                        $("#firmado_hoy").change(function () {
                             clearFormDataItem("consentimiento");
                             formData.append("consentimiento", "Consentimiento firmado hoy");
                             $("#consentimiento_section").remove();
@@ -604,7 +605,7 @@
                         formData.append("consentimiento", "No consentimiento");
                         clearFormDataItem("alergia");
                         formData.append("alergia", "No");
-    
+
                         $('#consentimiento_section').hide();
                     }
                 });
@@ -619,7 +620,7 @@
                                 if (val) {
                                     clearFormDataItem("alergia");
                                     formData.append("alergia", val);
-    
+
                                     $('#consentimiento_section').hide();
                                 }
                             });
@@ -637,9 +638,9 @@
                 return;
             }
 
-            $("#procedure").append('<div id="especialista_section" class="procedure group-b"><button class="btn btn-primary" id="especialista">ESPECIALISTA</button></div>');            
-            
-            $("#especialista").click(function() {
+            $("#procedure").append('<div id="especialista_section" class="procedure group-b"><button class="btn btn-primary" id="especialista">ESPECIALISTA</button></div>');
+
+            $("#especialista").click(function () {
                 if (!formData.get("modify")) $("#modificacion_section").hide();
 
                 const labels = esList[especStatus];
@@ -657,8 +658,8 @@
                 })
             });
         }
-        
-        const checkShowImageGroup = function() {
+
+        const checkShowImageGroup = function () {
             // IF Especialista is selected Parafina, move to ANOTACIONES GENERALES
             if (especStatus == 5) {
                 selectedSatus = 1;
@@ -668,7 +669,7 @@
             }
         }
 
-        const ImageGroup = function() {
+        const ImageGroup = function () {
             if (document.querySelector('#image_group')) {
                 return;
             }
@@ -676,7 +677,7 @@
             $('#procedure').append('<div id="image_group" class="procedure group-image"></div>')
             $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="inicial_pic">INICIAL PIC</button></div>');
             $('#image_group').append('<div class="procedure"><button class="btn btn-primary" id="final_pic">FINAL PIC</button></div>');
-            
+
             $(['inicial_pic', 'final_pic']).each(function (i, id) {
                 $('#' + id).click(function () {
                     if (!document.getElementById(id + '_file')) {
@@ -685,8 +686,8 @@
                             convertHeicToJpg(this);
                             $('#' + id).parent().hide();
 
-                            if ( $("#inicial_pic_file").val() && $("#final_pic_file").val() ) {
-                                
+                            if ($("#inicial_pic_file").val() && $("#final_pic_file").val()) {
+
                                 if (remocionStatus == 1 || remocionStatus == 3) {
                                     selectedSatus = 3;
                                     RemocionEnzimas();
@@ -704,12 +705,12 @@
             });
         }
 
-        const Tamano = function() {
+        const Tamano = function () {
             if (document.querySelector('#tamno_section')) {
                 return;
             }
             $('#procedure').append('<div class="procedure" id="tamno_section"><button class="btn btn-primary" id="tamano_molde">TAMAÑO DE MOLDE</button></div>');
-            $("#tamano_molde").click(function() {
+            $("#tamano_molde").click(function () {
                 if (document.querySelector('#small')) {
                     return;
                 }
@@ -718,7 +719,7 @@
                     $('#tamno_section').append(createCheckbox(toFriendlyID(label), label));
                     $('#' + toFriendlyID(label)).click(function () {
                         $('#tamno_section').empty();
-                        
+
                         clearFormDataItem("tamno");
                         formData.append("tamno", label.toUpperCase());
 
@@ -727,33 +728,33 @@
                 })
             });
         }
-        
-        const RemocionEnzimas = function() {
+
+        const RemocionEnzimas = function () {
             if (document.querySelector('#remocionenzimas_section')) {
                 return;
             }
 
             $('#procedure').append('<div id="remocionenzimas_section" class="procedure"></div>')
-            
+
             $('#remocionenzimas_section').append('<div id="remocionenzimas_section_sub_1" class="procedure"><button class="btn btn-primary" id="enzimas_sesion">SESION</button></div>');
             $('#remocionenzimas_section').append('<div id="remocionenzimas_section_sub_2" class="procedure"><button class="btn btn-primary" id="enzimas_base">BASE</button></div>');
             $('#remocionenzimas_section').append('<div id="remocionenzimas_section_sub_3" class="procedure"><button class="btn btn-primary" id="enzimas_tipo">TIPO DE PIEL</button></div>');
-                
-            $("#enzimas_sesion").click(function() {
+
+            $("#enzimas_sesion").click(function () {
                 if (document.querySelector('#enzimas_sesion_input')) {
                     return;
                 }
                 $('#remocionenzimas_section_sub_1').append(createInput('enzimas_sesion_input'));
                 $('#enzimas_sesion_input').change(function () {
                     clearFormDataItem("enzimas_sesion");
-                    formData.append( "enzimas_sesion", $(this).val() );
+                    formData.append("enzimas_sesion", $(this).val());
                 });
 
-                $("#enzimas_sesion_input").blur(function() {
+                $("#enzimas_sesion_input").blur(function () {
                     $('#remocionenzimas_section_sub_1').remove();
                 });
             });
-            $("#enzimas_base").click(function() {
+            $("#enzimas_base").click(function () {
                 if (document.querySelector('#roja')) {
                     return;
                 }
@@ -768,16 +769,16 @@
                 })
             });
 
-            $("#enzimas_tipo").click(function() {
+            $("#enzimas_tipo").click(function () {
                 if (document.querySelector('#enzimas_tipo_1')) {
                     return;
                 }
                 for (var i = 1; i <= 5; i++) {
                     const tipoId = "enzimas_tipo_" + i;
                     let checkboxObj = createCheckbox(tipoId, i);
-                    $("#remocionenzimas_section_sub_3").append( checkboxObj )
+                    $("#remocionenzimas_section_sub_3").append(checkboxObj)
 
-                    $("#" + tipoId).change(function() {
+                    $("#" + tipoId).change(function () {
                         if ($(this).prop('checked')) {
                             $(remocionenzimas_section_sub_3).empty();
 
@@ -796,16 +797,16 @@
                     });
                 }
             });
-            
+
         }
-        
-        const RemocionLaser = function() {
+
+        const RemocionLaser = function () {
             if (document.querySelector('#remocionlaser_section')) {
                 return;
             }
 
             $('#procedure').append('<div id="remocionlaser_section" class="procedure"></div>')
-            
+
             $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_1" class="procedure"><button class="btn btn-primary" id="laser_area">AREA</button></div>');
             $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_2" class="procedure"><button class="btn btn-primary" id="laser_sesion">SESION</button></div>');
             $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_3" class="procedure"><button class="btn btn-primary" id="laser_base">BASE</button></div>');
@@ -813,13 +814,13 @@
             $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_5" class="procedure"><button class="btn btn-primary" id="laser_frec">FRECUENCIA</button></div>');
             $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_6" class="procedure"><button class="btn btn-primary" id="laser_intent">INTENSIDAD</button></div>');
             $('#remocionlaser_section').append('<div id="remocionlaser_section_sub_7" class="procedure"><button class="btn btn-primary" id="laser_disparos">DISPAROS</button></div>');
-            
-            $("#laser_area").click(function() {
+
+            $("#laser_area").click(function () {
                 if (document.querySelector('#cejas')) {
                     return;
                 }
-                const labels = ["Cejas", "Brazo izquierdo", "Brazo derecho", "Pierna izquierda", "Pierna derecha", "Hombro izquierdo", 
-                                "Hombro derecho", "Mano izquierda", "Mano derecha", "Espalda", "Pecho", "Cuello", "Pelvis", "Gluteos"];
+                const labels = ["Cejas", "Brazo izquierdo", "Brazo derecho", "Pierna izquierda", "Pierna derecha", "Hombro izquierdo",
+                    "Hombro derecho", "Mano izquierda", "Mano derecha", "Espalda", "Pecho", "Cuello", "Pelvis", "Gluteos"];
                 labels.forEach(function (label) {
                     $('#remocionlaser_section_sub_1').append(createCheckbox(toFriendlyID(label), label));
                     $('#' + toFriendlyID(label)).click(function () {
@@ -830,14 +831,14 @@
                     });
                 })
             });
-            $("#laser_sesion").click(function() {
+            $("#laser_sesion").click(function () {
                 if (document.querySelector('#laser_sesion_1')) {
                     return;
                 }
                 for (var i = 6; i >= 1; i--) {
                     const sesionId = "laser_sesion_" + i;
                     let checkboxObj = createCheckbox(sesionId, i);
-                    $("#remocionlaser_section_sub_2").append( checkboxObj )
+                    $("#remocionlaser_section_sub_2").append(checkboxObj)
 
                     $('#' + sesionId).click(function () {
                         clearFormDataItem("laser_sesion");
@@ -847,7 +848,7 @@
                     });
                 }
             });
-            $("#laser_base").click(function() {
+            $("#laser_base").click(function () {
                 if (document.querySelector('#negra')) {
                     return;
                 }
@@ -862,14 +863,14 @@
                     });
                 })
             });
-            $("#laser_forto").click(function() {
+            $("#laser_forto").click(function () {
                 if (document.querySelector('#laser_forto_1')) {
                     return;
                 }
                 for (var i = 1; i <= 4; i++) {
                     const pielId = "laser_forto_" + i;
                     let checkboxObj = createCheckbox(pielId, i);
-                    $("#remocionlaser_section_sub_4").append( checkboxObj )
+                    $("#remocionlaser_section_sub_4").append(checkboxObj)
 
                     $('#' + pielId).click(function () {
                         clearFormDataItem("laser_forto");
@@ -879,123 +880,123 @@
                     });
                 }
             });
-            $("#laser_frec").click(function() {
+            $("#laser_frec").click(function () {
                 if (document.querySelector('#laser_frec_input')) {
                     return;
                 }
                 $('#remocionlaser_section_sub_5').append(createInput('laser_frec_input'));
                 $('#laser_frec_input').change(function () {
                     clearFormDataItem("laser_frec");
-                    formData.append( "laser_frec", $(this).val() );
+                    formData.append("laser_frec", $(this).val());
                 });
 
-                $("#laser_frec_input").blur(function() {
+                $("#laser_frec_input").blur(function () {
                     $('#remocionlaser_section_sub_5').remove();
                     PostService();
                 });
             });
-            $("#laser_intent").click(function() {
+            $("#laser_intent").click(function () {
                 if (document.querySelector('#laser_intent_input')) {
                     return;
                 }
                 $('#remocionlaser_section_sub_6').append(createInput('laser_intent_input'));
                 $('#laser_intent_input').change(function () {
                     clearFormDataItem("laser_intent");
-                    formData.append( "laser_intent", $(this).val() );
+                    formData.append("laser_intent", $(this).val());
                 });
 
-                $("#laser_intent_input").blur(function() {
+                $("#laser_intent_input").blur(function () {
                     $('#remocionlaser_section_sub_6').remove();
                     PostService();
                 });
             });
-            $("#laser_disparos").click(function() {
+            $("#laser_disparos").click(function () {
                 if (document.querySelector('#laser_disparos_input')) {
                     return;
                 }
                 $('#remocionlaser_section_sub_7').append(createInput('laser_disparos_input'));
                 $('#laser_disparos_input').change(function () {
                     clearFormDataItem("laser_disparos");
-                    formData.append( "laser_disparos", $(this).val() );
+                    formData.append("laser_disparos", $(this).val());
                 });
 
-                $("#laser_disparos_input").blur(function() {
+                $("#laser_disparos_input").blur(function () {
                     $('#remocionlaser_section_sub_7').remove();
                     PostService();
                 });
             });
-            
+
         }
-        
-        const PostService = function( remo = 0 ) {
+
+        const PostService = function (remo = 0) {
             if (document.querySelector('#post_section')) {
                 return false;
             }
 
             $('#procedure').append('<div id="post_section" class="procedure group-c"></div>')
-            
+
             $('#post_section').append('<div id="post_service_sub_1" class="procedure"><button class="btn btn-primary" id="anotaciones_generales">ANOTACIONES GENERALES</button></div>');
             $('#post_section').append('<div id="post_service_sub_2" class="procedure"><button class="btn btn-primary" id="product_adicion">PRODUCTOS</button></div>');
             $('#post_section').append('<div id="post_service_sub_3" class="procedure"><button class="btn btn-primary" id="servicio_furtros">SERVICIO FUTUROS</button></div>');
-                
-            $("#product_adicion").click(function() {
+
+            $("#product_adicion").click(function () {
                 if (document.querySelector('#product_adicion_input')) {
                     return;
                 }
                 $('#post_service_sub_2').append(createInput('product_adicion_input'));
                 $('#product_adicion_input').change(function () {
                     clearFormDataItem("product_adicion");
-                    formData.append( "product_adicion", $(this).val() );
+                    formData.append("product_adicion", $(this).val());
                     $('#post_service_sub_2').hide();
                 });
 
-                $("#product_adicion_input").blur(function() {
+                $("#product_adicion_input").blur(function () {
                     CierreProcedimiento();
                     $('#post_service_sub_2').hide();
                 });
             });
-            $("#servicio_furtros").click(function() {
+            $("#servicio_furtros").click(function () {
                 if (document.querySelector('#servicio_furtros_input')) {
                     return;
                 }
                 $('#post_service_sub_3').append(createInput('servicio_furtros_input'));
                 $('#servicio_furtros_input').change(function () {
                     clearFormDataItem("servicio_furtros");
-                    formData.append( "servicio_furtros", $(this).val() );
+                    formData.append("servicio_furtros", $(this).val());
                     $('#post_service_sub_3').hide();
                 });
 
-                $("#servicio_furtros_input").blur(function() {
+                $("#servicio_furtros_input").blur(function () {
                     CierreProcedimiento();
                 });
             });
-            $("#anotaciones_generales").click(function() {
+            $("#anotaciones_generales").click(function () {
                 if (document.querySelector('#anotaciones_generales_section_sub')) return;
 
                 $('#post_service_sub_1').append(createInput('anotaciones_generales_input'));
                 $('#anotaciones_generales_input').change(function () {
                     clearFormDataItem("anotaciones_generales");
-                    formData.append( "anotaciones_generales", $(this).val() );
+                    formData.append("anotaciones_generales", $(this).val());
                     $('#post_service_sub_1').hide();
                 });
 
-                $("#anotaciones_generales_input").blur(function() {
+                $("#anotaciones_generales_input").blur(function () {
                     CierreProcedimiento();
                     $('#post_service_sub_1').hide();
                 });
 
             });
-            
+
         }
 
-        const CierreProcedimiento = function() {
+        const CierreProcedimiento = function () {
             if (document.querySelector('#cierre_procedimiento')) {
                 return;
             }
-            
+
             $('#procedure').append('<div id="cierre_procedimiento" class="procedure"></div>')
             $('#cierre_procedimiento').append('<div id="" class="procedure"><button class="btn btn-primary" id="enviar">ENVIAR</button></div>');
-            
+
             $('#enviar').click(function () {
                 sendRequest();
             });
@@ -1015,66 +1016,66 @@
 
             const name = localStorage.getItem("name");
             const date = localStorage.getItem("date");
-            
+
             if (name && date) {
                 start();
                 $('#results').append(`<h6>${name}</h6>`);
                 $('#results').append(`<p>${date}</p>`);
             }
-            
+
             $('#procedimiento').click(function () {
                 Procedimiento();
             });
-            
+
             $('#nombre').click(function () {
                 Nombre();
             });
 
             $.LoadingOverlaySetup({
-                background              : "rgba(255, 255, 255, 0.8)",
-                backgroundClass         : "",
-                image                   : "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><circle r='80' cx='500' cy='90'/><circle r='80' cx='500' cy='910'/><circle r='80' cx='90' cy='500'/><circle r='80' cx='910' cy='500'/><circle r='80' cx='212' cy='212'/><circle r='80' cx='788' cy='212'/><circle r='80' cx='212' cy='788'/><circle r='80' cx='788' cy='788'/></svg>",
-                imageAnimation          : "2000ms rotate_right",
-                imageAutoResize         : true,
-                imageResizeFactor       : 1,
-                imageColor              : "#202020",
-                imageClass              : "",
-                imageOrder              : 1,
+                background: "rgba(255, 255, 255, 0.8)",
+                backgroundClass: "",
+                image: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><circle r='80' cx='500' cy='90'/><circle r='80' cx='500' cy='910'/><circle r='80' cx='90' cy='500'/><circle r='80' cx='910' cy='500'/><circle r='80' cx='212' cy='212'/><circle r='80' cx='788' cy='212'/><circle r='80' cx='212' cy='788'/><circle r='80' cx='788' cy='788'/></svg>",
+                imageAnimation: "2000ms rotate_right",
+                imageAutoResize: true,
+                imageResizeFactor: 1,
+                imageColor: "#202020",
+                imageClass: "",
+                imageOrder: 1,
                 // Text
-                text                    : "Uploading...",
-                textAnimation           : "",
-                textAutoResize          : true,
-                textResizeFactor        : 0.5,
-                textColor               : "#202020",
-                textClass               : "upload-status",
-                textOrder               : 4,
+                text: "Uploading...",
+                textAnimation: "",
+                textAutoResize: true,
+                textResizeFactor: 0.5,
+                textColor: "#202020",
+                textClass: "upload-status",
+                textOrder: 4,
                 // Progress
-                progress                : true,
-                progressAutoResize      : true,
-                progressResizeFactor    : 0.25,
-                progressColor           : "#a0a0a0",
-                progressClass           : "",
-                progressOrder           : 5,
-                progressFixedPosition   : "",
-                progressSpeed           : 200,
-                progressMin             : 0,
-                progressMax             : 100,
+                progress: true,
+                progressAutoResize: true,
+                progressResizeFactor: 0.25,
+                progressColor: "#a0a0a0",
+                progressClass: "",
+                progressOrder: 5,
+                progressFixedPosition: "",
+                progressSpeed: 200,
+                progressMin: 0,
+                progressMax: 100,
                 // Sizing
-                size                    : 50,
-                maxSize                 : 120,
-                minSize                 : 20,
+                size: 50,
+                maxSize: 120,
+                minSize: 20,
                 // Misc
-                direction               : "column",
-                fade                    : true,
-                resizeInterval          : 50,
-                zIndex                  : 2147483647
+                direction: "column",
+                fade: true,
+                resizeInterval: 50,
+                zIndex: 2147483647
             });
         });
 
-        $(document).ajaxStart(function(){
+        $(document).ajaxStart(function () {
             $.LoadingOverlay("show");
         });
-        $(document).ajaxStop(function(){
+        $(document).ajaxStop(function () {
             $.LoadingOverlay("hide");
         });
     </script>
