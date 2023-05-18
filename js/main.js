@@ -40,7 +40,7 @@ $(function () {
       delay: 200,
       duration: 600,
       easing: "linear",
-      complete: function (anim) {},
+      complete: function (anim) { },
     });
     anime({
       targets: ".art-preloader",
